@@ -1,4 +1,5 @@
 <template>
+    <QuizCard />
   <HelloWorld />
   <topbar />
 </template>
