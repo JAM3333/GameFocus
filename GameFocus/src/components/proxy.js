@@ -1,21 +1,21 @@
 const express = require("express");
-const cors = require("cors");
 const axios = require("axios");
-
 const app = express();
-const PORT = 3001;
 
-app.use(cors());
+app.use(express.json());
 
-app.get("/steam-apps", async (req, res) => {
+// Proxy route
+app.get("/api/game-info", async (req, res) => {
+  const { ids } = req.query;
+  const apiUrl = `https://api.isthereanydeal.com/games/info/v2?key=dd75473a9cfd957ec7b3a9f623e67a844a4348f5&ids=${ids}`;
+
   try {
-    const response = await axios.get(
-      "https://api.steampowered.com/ISteamApps/GetAppList/v2/"
-    );
-    res.json(response.data);
-  } catch (err) {
-    res.status(500).send(err.message);
+    const response = await axios.get(apiUrl);
+    res.json(response.data); // Forward the API response to the client
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch data" });
   }
 });
 
-app.listen(PORT, () => console.log(`Proxy running at http://localhost:${PORT}`));
+// Start the server
+app.listen(5000, () => console.log("Proxy server running on port 5000"));
