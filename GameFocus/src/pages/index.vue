@@ -1,7 +1,5 @@
 <template>
-    <QuizCard />
-  <HelloWorld />
-  <topbar />
+  <Spotlight />
 </template>
 
 <script setup>
