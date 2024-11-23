@@ -8,6 +8,7 @@
     <!-- Navigation Links -->
     <v-btn text>Home</v-btn>
     <v-btn text>About Us</v-btn>
+    <v-btn text>Info</v-btn>
 
     <!-- Alternative Dropdown Menu with v-hover -->
     <v-hover v-slot:default="{ isHovering }">
