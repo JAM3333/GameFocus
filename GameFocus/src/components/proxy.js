@@ -6,12 +6,13 @@ app.use(express.json());
 
 // Proxy route
 app.get("/api/game-info", async (req, res) => {
-  const { ids } = req.query;
-  const apiUrl = `https://api.isthereanydeal.com/games/info/v2?key=dd75473a9cfd957ec7b3a9f623e67a844a4348f5&ids=${ids}`;
+  const ids = req.query.ids;
+  const key = req.query.key;
+  const apiUrl = `https://api.isthereanydeal.com/games/info/v2?key=${key}&ids=${ids}`;
 
   try {
     const response = await axios.get(apiUrl);
-    res.json(response.data); // Forward the API response to the client
+    res.json(response.data); 
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch data" });
   }

@@ -1,5 +1,6 @@
 <template>
   <Spotlight />
+  <GameRow></GameRow>
 </template>
 
 <script setup>

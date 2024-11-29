@@ -4,5 +4,4 @@ import GameRow from '@/components/GameRow.vue';
 
 <template>
     <GameRow />
-
 </template>

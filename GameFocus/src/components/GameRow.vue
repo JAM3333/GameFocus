@@ -10,6 +10,7 @@
         >
         <GameCard
         :title="item.title"
+        :gameId="item.gameId"
         :dealPrice="item.dealPrice"
         :url="item.url"
         :drm="item.drm"
@@ -42,6 +43,7 @@
             const items = response.data.list;
             this.saleItems = items.map((item) => ({
               title: item.title,
+              gameId: item.id,
               dealPrice: item.deal.price.amount.toFixed(2), 
               regularPrice: item.deal.regular.amount.toFixed(2), 
               discount: item.deal.cut, 
@@ -50,6 +52,10 @@
               drm: item.deal.drm.map((drm) => drm.name).join(", "),
               platform: item.deal.platforms.map((platform) => platform.name).join(", "), 
             }));
+            this.saleItems.forEach(element => {
+              console.log(element.drm)
+
+            });
           })
           .catch((error) => {
             console.error("Failed to fetch sale items:", error);
