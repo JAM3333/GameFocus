@@ -1,10 +1,10 @@
 <template>
     <v-card outlined class="game-card">
+      <v-img width="15vw" height="25vh" cover v-if="image==''" src="https://th.bing.com/th/id/R.385e7dbec0e6c313cfd6dc3b6fff1c95?rik=Ps5ZHpTWtX4y3A&pid=ImgRaw&r=0"></v-img>
       <v-img
         :src="image"
         aspect-ratio="16/9"
-        class="mb-2"
-        height=""
+        class="mb-image"
       ></v-img>
   
       <v-card-title class="text-h6">{{ title }}</v-card-title>
@@ -61,7 +61,7 @@
     },
     data() {
       return {
-        image: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/ss_796601d9d67faf53486eeb26d0724347cea67ddc.600x338.jpg?t=1729703045",
+        image: "https://www.freeiconspng.com/uploads/no-image-icon-11.PNG",
         platforms: [],
       };
     },
@@ -74,7 +74,7 @@
             if (gameInfo) {
               console.log(gameInfo.drm)
               this.image = gameInfo.assets["banner400"] || this.image;
-              this.platforms = gameInfo.drm.map((drm) => this.getPlatformLogo(drm));
+              this.platforms = ""//gameInfo.drm.map((drm) => this.getPlatformLogo(drm));
             }
           })
           .catch((error) => {
@@ -82,6 +82,7 @@
           });
       },
       getPlatformLogo(platformName) {
+        console.log()
         const platformLogos = {
           Steam: "https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg",
           Epic: "https://upload.wikimedia.org/wikipedia/commons/6/63/Epic_Games_logo.svg",
@@ -99,7 +100,11 @@
   .game-card {
     position: relative;
   }
-  
+  .mb-image{
+    object-fit: contain;
+    width: 100%;
+    height: 140px;  
+  }
   .platform-section {
     display: flex;
     justify-content: flex-start;
