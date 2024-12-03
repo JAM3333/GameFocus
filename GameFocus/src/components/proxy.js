@@ -6,13 +6,13 @@ app.use(express.json());
 
 // Proxy route
 app.get("/api/game-info", async (req, res) => {
-  const ids = req.query.ids;
-  const key = req.query.key;
-  const apiUrl = `https://api.isthereanydeal.com/games/info/v2?key=${key}&ids=${ids}`;
+  //const ids = req.query.ids;
+  //const key = req.query.key;
+  const apiUrl = `https://api.steampowered.com/ISteamApps/GetAppList/v0002/?format=json`;
 
   try {
     const response = await axios.get(apiUrl);
-    res.json(response.data); 
+    res.json(response); 
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch data" });
   }

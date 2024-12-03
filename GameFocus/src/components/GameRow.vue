@@ -5,7 +5,7 @@
         <v-col
           v-for="(item, index) in saleItems"
           :key="index"
-          cols="12"
+          cols="4"
           md="3"
         >
         <GameCard
@@ -37,7 +37,7 @@
       fetchDeals() {
         axios
           .get(
-            `https://api.isthereanydeal.com/deals/v2?key=${import.meta.env.VITE_API_KEY}`
+            `https://api.isthereanydeal.com/deals/v2?key=${import.meta.env.VITE_API_KEY}&limit=16`
           )
           .then((response) => {
             const items = response.data.list;
