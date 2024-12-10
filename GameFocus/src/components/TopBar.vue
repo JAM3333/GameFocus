@@ -10,47 +10,36 @@
     <v-btn text href="/about">About Us</v-btn>
     <v-btn text href="/info">Info</v-btn>
 
-    <!-- Dropdown Menu using v-menu with manual control -->
-    <v-menu v-model="menuVisible" offset-y close-on-content-click>
-      <!-- Button as the activator -->
+    <!-- Dropdown Menu -->
+    <v-menu class="genres-list" v-model="menuVisible" offset-y>
       <template v-slot:activator="{ on, attrs }">
         <v-btn text v-bind="attrs" v-on="on" @mouseenter="menuVisible = true">
           Genres
           <v-icon right>mdi-menu-down</v-icon>
         </v-btn>
       </template>
-
-      <!-- Dropdown Content -->
-      <v-list class="genres-list" @mouseleave="menuVisible = false">
+      <v-list @mouseleave="menuVisible = false">
         <v-list-item v-for="(genre, index) in genres" :key="index" @click="handleGenreClick(genre)">
           <v-list-item-title>{{ genre }}</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-menu>
 
-    <!-- Spacer to Push Search to the Right -->
+    <!-- Spacer and Search Input -->
     <v-spacer></v-spacer>
     <v-spacer></v-spacer>
     <v-spacer></v-spacer>
-    <!-- Search Input -->
-    <v-col
-      cols="12"
-      sm="6"
-      md="3"
+    <v-text-field
       class="search"
-    >
-      <v-text-field
-        label="Search"
-        outlined
-        class="search"
-      ></v-text-field>
-    </v-col>
+      label="Search for Games"
+      outlined
+      v-model="searchQuery"
+      @keyup.enter="performSearch"
+    ></v-text-field>
 
     <!-- User Profile Section -->
-
     <v-btn icon @click="goToProfile">
-      <v-icon :class="'mdi mdi-account-outline'"
-              class="profile-icon"></v-icon>
+      <v-icon class="mdi mdi-account-outline"></v-icon>
     </v-btn>
   </v-app-bar>
 </template>
@@ -59,18 +48,24 @@
 export default {
   data() {
     return {
-      genres: ['Action', 'Adventure', 'Fighting', 'Racing'], // List of genres
-      menuVisible: false, // Controls visibility of the menu
+      searchQuery: "",
+      genres: ['Action', 'Adventure', 'Fighting', 'Racing'],
+      menuVisible: false,
     };
   },
   methods: {
     handleGenreClick(genre) {
       console.log(`Selected genre: ${genre}`);
-      this.menuVisible = false; // Close the menu after selection
+      this.menuVisible = false;
     },
     goToProfile() {
       console.log("Navigating to profile...");
-      // Add profile navigation logic here
+    },
+    performSearch() {
+      if (this.searchQuery.trim()) {
+        this.$router.push({ path: '/search-page', query: { q: this.searchQuery } });
+        this.searchQuery = "";
+      }
     },
   },
 };
@@ -81,7 +76,6 @@ export default {
 .v-application .v-app-bar {
   background-color: #000000;
 }
-
 .v-btn {
   color: white;
 }
@@ -120,7 +114,6 @@ export default {
 }
 
 .search{
-  bottom: 0;
+  margin-top: 20px;
 }
-
 </style>
