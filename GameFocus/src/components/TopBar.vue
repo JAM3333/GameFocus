@@ -6,42 +6,41 @@
     </v-btn>
 
     <!-- Navigation Links -->
-    <v-btn text>Home</v-btn>
-    <v-btn text>About Us</v-btn>
-    <v-btn text>Info</v-btn>
+    <v-btn text href="/">Home</v-btn>
+    <v-btn text href="/about">About Us</v-btn>
+    <v-btn text href="/info">Info</v-btn>
 
-    <!-- Alternative Dropdown Menu with v-hover -->
-    <v-hover v-slot:default="{ isHovering }">
-      <div>
-        <v-btn text @click="toggleGenresMenu">
+    <!-- Dropdown Menu -->
+    <v-menu class="genres-list" v-model="menuVisible" offset-y>
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn text v-bind="attrs" v-on="on" @mouseenter="menuVisible = true">
           Genres
           <v-icon right>mdi-menu-down</v-icon>
         </v-btn>
+      </template>
+      <v-list @mouseleave="menuVisible = false">
+        <v-list-item v-for="(genre, index) in genres" :key="index" @click="handleGenreClick(genre)">
+          <v-list-item-title>{{ genre }}</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
 
-        <v-list
-          v-if="isHovering || genresMenuOpen"
-          style="position: absolute; background-color: #333; margin-top: 5px; z-index: 1000;"
-        >
-          <v-list-item v-for="(genre, index) in genres" :key="index" @click="closeGenresMenu">
-            <v-list-item-title>{{ genre }}</v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </div>
-    </v-hover>
-
-    <!-- Spacer to Push Search to the Right -->
+    <!-- Spacer and Search Input -->
     <v-spacer></v-spacer>
     <v-spacer></v-spacer>
     <v-spacer></v-spacer>
-
-    <!-- Search Input and Profile Icon -->
     <v-text-field
-      flat
-      hide-details
-      placeholder="Search"
-      append-icon="mdi-magnify"
-      dense
+      class="search"
+      label="Search for Games"
+      outlined
+      v-model="searchQuery"
+      @keyup.enter="performSearch"
     ></v-text-field>
+
+    <!-- User Profile Section -->
+    <v-btn icon @click="goToProfile">
+      <v-icon class="mdi mdi-account-outline"></v-icon>
+    </v-btn>
   </v-app-bar>
 </template>
 
@@ -49,26 +48,72 @@
 export default {
   data() {
     return {
-      genres: ['Action', 'Comedy', 'Drama', 'Fantasy'], // Sample genres
-      genresMenuOpen: false
+      searchQuery: "",
+      genres: ['Action', 'Adventure', 'Fighting', 'Racing'],
+      menuVisible: false,
     };
   },
   methods: {
-    toggleGenresMenu() {
-      this.genresMenuOpen = !this.genresMenuOpen;
+    handleGenreClick(genre) {
+      console.log(`Selected genre: ${genre}`);
+      this.menuVisible = false;
     },
-    closeGenresMenu() {
-      this.genresMenuOpen = false;
-    }
-  }
-}
+    goToProfile() {
+      console.log("Navigating to profile...");
+    },
+    performSearch() {
+      if (this.searchQuery.trim()) {
+        this.$router.push({ path: '/search-page', query: { q: this.searchQuery } });
+        this.searchQuery = "";
+      }
+    },
+  },
+};
 </script>
 
 <style>
+/* Styling for v-app-bar */
 .v-application .v-app-bar {
-  background-color: #000000; /* Black background */
+  background-color: #000000;
 }
 .v-btn {
-  color: white; /* White text for buttons */
+  color: white;
+}
+
+.v-list-item:hover {
+  background-color: #555;
+}
+
+.genres-list {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  max-width: 30rem;
+  margin-top: 4rem;
+  margin-left: 19.75rem;
+}
+
+/* User Profile Icon Style */
+.profile-icon {
+  transition: transform 0.3s ease-in-out, color 0.3s ease-in-out;
+  color: #757474;
+}
+
+.profile-icon:hover {
+  transform: scale(1.2);
+  color: #ffffff; /* Highlight color on hover */
+}
+
+/* Styling for Search Input */
+.v-text-field input {
+  color: white;
+}
+
+.v-text-field input::placeholder {
+  color: #bbb;
+}
+
+.search{
+  margin-top: 20px;
 }
 </style>

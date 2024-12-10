@@ -6,15 +6,15 @@
         aspect-ratio="16/9"
         class="mb-image"
       ></v-img>
-  
+
       <v-card-title class="text-h6">{{ title }}</v-card-title>
-  
+
       <v-card-subtitle>
         <div class="price-section">
           <span class="price">{{ dealPrice === 0 ? "FREE" : `$${dealPrice}` }}</span>
         </div>
       </v-card-subtitle>
-  
+
       <v-card-actions class="platform-section">
         <v-img
           v-for="(platformLogo, index) in platforms"
@@ -24,17 +24,17 @@
           contain
         ></v-img>
       </v-card-actions>
-  
+
       <!-- Bookmark Icon -->
       <v-btn icon class="bookmark-btn">
         <v-icon>mdi-bookmark</v-icon>
       </v-btn>
     </v-card>
   </template>
-  
+
   <script>
   import axios from "axios";
-  
+
   export default {
     props: {
       title: {
@@ -47,11 +47,13 @@
       },
       dealPrice: {
         type: String,
-        required: true,
+        required: false,
+        default: "-1",
       },
       url: {
         type: String,
-        required: true,
+        required: false,
+        default: "abc",
       },
       drm: {
         type: String,
@@ -95,7 +97,7 @@
     },
   };
   </script>
-  
+
   <style scoped>
   .game-card {
     position: relative;
@@ -103,28 +105,27 @@
   .mb-image{
     object-fit: contain;
     width: 100%;
-    height: 140px;  
+    height: 140px;
   }
   .platform-section {
     display: flex;
     justify-content: flex-start;
     gap: 10px;
   }
-  
+
   .platform-logo {
     width: 24px;
     height: 24px;
   }
-  
+
   .price {
     font-weight: bold;
     font-size: 1.2rem;
   }
-  
+
   .bookmark-btn {
     position: absolute;
     top: 10px;
     right: 10px;
   }
   </style>
-  
