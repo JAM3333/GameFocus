@@ -16,7 +16,7 @@
             </div>
             <div class="p-5">
               <p id="description" style="font-size: 1.2rem;">
-                Game Focus ist die ultimative Plattform, um Spielepreise von verschiedenen Anbietern zu vergleichen.
+                Game Focus ist die ultimative Plattform, um Spielpreise von verschiedenen Anbietern zu vergleichen.
               </p>
             </div>
           </v-col>
