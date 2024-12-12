@@ -14,7 +14,7 @@
     <v-menu class="genres-list" v-model="menuVisible" offset-y>
       <template v-slot:activator="{ on, attrs }">
         <v-btn text v-bind="attrs" v-on="on" @mouseenter="menuVisible = true">
-          Genres
+          Platform
           <v-icon right>mdi-menu-down</v-icon>
         </v-btn>
       </template>
@@ -49,7 +49,7 @@ export default {
   data() {
     return {
       searchQuery: "",
-      genres: ['Action', 'Adventure', 'Fighting', 'Racing'],
+      genres: ['Epic Games', 'Steam', 'Ubisoft', 'EA Store'],
       menuVisible: false,
     };
   },
