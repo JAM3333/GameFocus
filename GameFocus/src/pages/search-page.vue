@@ -87,7 +87,7 @@ export default {
     async GetPrices(gameIds) {
       try {
         const response = await axios.post(
-          `https://api.isthereanydeal.com/games/prices/v3?key=${import.meta.env.VITE_API_KEY}`,
+          `https://api.isthereanydeal.com/games/prices/v3?key=${import.meta.env.VITE_API_KEY}&country=de`,
           JSON.stringify(this.gameIds),
         );
 
