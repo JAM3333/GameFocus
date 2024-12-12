@@ -3,7 +3,7 @@
     <h1>Results for "{{ $route.query.q }}"</h1>
     <v-container>
       <v-text-field
-        class="search"
+        class="searchonpage"
         label="Search for Games"
         outlined
         v-model="searchQuery"
@@ -128,5 +128,9 @@ h1 {
 v-card {
   background-color: #1e1e1e;
   color: white;
+}
+
+.searchonpage{
+  margin-top: -2rem;
 }
 </style>
