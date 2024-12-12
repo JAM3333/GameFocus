@@ -12,6 +12,7 @@
           <GameCard
             :title="item.title"
             :gameId="item.gameId"
+            :priceInfo="item.priceInfo"
           />
         </v-col>
       </v-row>
@@ -21,12 +22,15 @@
 
 <script>
 import GameCard from "@/components/GameCard.vue";
+import axios from "axios";
 
 export default {
-  components: {GameCard},
+  components: { GameCard },
   data() {
     return {
       games: [],
+      gameIds: [],
+      tempgames: [],
     };
   },
   watch: {
@@ -42,15 +46,45 @@ export default {
       try {
         const response = await fetch(`https://api.isthereanydeal.com/games/search/v1?key=${import.meta.env.VITE_API_KEY}&title=${query}`);
         const data = await response.json();
-        console.log(data)
+
 
         // Map API response to games array
-        this.games = data.map(game => ({
+        this.tempgames = data.map(game => ({
           title: game.title || 'Unknown Title',
           gameId: game.id,
+          priceInfo: null,
         }));
+
+        // Game IDs in array schreiben
+        this.gameIds = this.tempgames.map(game => game.gameId);
+
+        // Preise für die Spiele abrufen
+        await this.GetPrices(this.gameIds);
       } catch (error) {
         console.error("Error fetching games:", error);
+      }
+    },
+
+    async GetPrices(gameIds) {
+      try {
+        const response = await axios.post(
+          `https://api.isthereanydeal.com/games/prices/v3?key=${import.meta.env.VITE_API_KEY}`,
+          JSON.stringify(this.gameIds),
+        );
+
+        const prices = response.data;
+        console.log(this.tempgames);
+
+        this.tempgames = this.tempgames.map(game => {
+          const priceInfo = prices.find(item => item.id === game.gameId); // Finde das passende Objekt
+          game.priceInfo = priceInfo || { historyLow: {}, deals: [], id: game.gameId } // Füge das ganze Objekt hinzu
+          return game;
+        });
+        // Update the games array reactively by setting it to tempgames
+        this.games = [...this.tempgames]; // This triggers a reactivity update
+        console.log(this.tempgames)
+      } catch (error) {
+        console.error("Error fetching prices:", error);
       }
     },
   },
