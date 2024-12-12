@@ -2,6 +2,15 @@
   <div class="search-page">
     <h1>Results for "{{ $route.query.q }}"</h1>
     <v-container>
+      <v-text-field
+        class="search"
+        label="Search for Games"
+        outlined
+        v-model="searchQuery"
+        @keyup.enter="performSearch"
+      ></v-text-field>
+    </v-container>
+    <v-container>
       <v-row dense>
         <v-col
           v-for="(item, index) in games"
@@ -28,6 +37,7 @@ export default {
   components: { GameCard },
   data() {
     return {
+      searchQuery: this.$route.query.q || "",
       games: [],
       gameIds: [],
       tempgames: [],
@@ -42,8 +52,17 @@ export default {
     },
   },
   methods: {
+    performSearch() {
+      if (this.searchQuery.trim()) {
+        this.$router.push({ path: '/search-page', query: { q: this.searchQuery } });
+        this.searchQuery = "";
+      }
+    },
     async fetchGames(query) {
       try {
+        this.games = [];
+        this.gameIds = [];
+
         const response = await fetch(`https://api.isthereanydeal.com/games/search/v1?key=${import.meta.env.VITE_API_KEY}&title=${query}`);
         const data = await response.json();
 
