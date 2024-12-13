@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid style="background-color: #262626; height: 100vh; overflow: hidden;">
+  <v-container fluid style="background-color: #181818; height:auto; padding:50px; overflow: hidden;">
     <v-row justify="center" align="center" class="image-slider">
       <v-col cols="12" md="8" class="slider-wrapper">
         <div
@@ -17,12 +17,19 @@
           >
             <h1>{{ image.title }}</h1>
             <p class="extended-description">{{ image.description }}</p>
-            <p>
+            <p class="price">
               <span class="discount">{{ image.discount }}</span>
               <span class="original-price">{{ image.originalPrice }}</span>
               <span class="reduced-price">{{ image.reducedPrice }}</span>
             </p>
-            <button color="primary" class="buy-btn">Buy Now</button>
+            <a
+              :href="image.storeLink"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="buy-btn"
+            >
+              Buy Now
+            </a>
           </div>
         </div>
         <div class="progress-bars">
@@ -51,7 +58,8 @@ export default {
       images: [
         {
           src: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/header.jpg?t=1729703045",
-          title: "Far Cry 6",
+          title: "Counter Strike 2",
+          storeLink: "https://store.steampowered.com/app/730/CounterStrike_2/",
           originalPrice: "$59.99",
           reducedPrice: "$14.99",
           discount: "-75%",
@@ -59,8 +67,24 @@ export default {
             "Experience a modern guerrilla revolution with stunning landscapes, instinctive shooting, and endless gameplay options.",
         },
         {
-          src: "https://assets.isthereanydeal.com/018d937e-e9ad-72bf-8d8b-27d5f2b28cb5/banner400.jpg?t=1732950646",
+          src: "https://assets.isthereanydeal.com/018d937e-e9b6-713b-83f6-4f060b9ca19e/banner400.jpg?t=1731994281",
           title: "Game 2",
+          originalPrice: "$49.99",
+          reducedPrice: "$24.99",
+          discount: "-50%",
+          description: "An exciting adventure game with captivating visuals and storylines.",
+        },
+        {
+          src: "https://assets.isthereanydeal.com/018d937e-e9b8-7125-9c92-5794c0e0e29c/banner400.jpg?t=1732878634",
+          title: "Game 3",
+          originalPrice: "$49.99",
+          reducedPrice: "$24.99",
+          discount: "-50%",
+          description: "An exciting adventure game with captivating visuals and storylines.",
+        },
+        {
+          src: "https://assets.isthereanydeal.com/018d937e-e9ad-72bf-8d8b-27d5f2b28cb5/banner400.jpg?t=1732950646",
+          title: "Game 4",
           originalPrice: "$49.99",
           reducedPrice: "$24.99",
           discount: "-50%",
@@ -77,11 +101,11 @@ export default {
     startCycle() {
       this.cycleInterval = setInterval(() => {
         if (this.progress < 100) {
-          this.progress += 1; // Adjust the increment for desired animation speed
+          this.progress += 0.5; // Adjust the increment for desired animation speed
         } else {
           this.nextImage();
         }
-      }, 50); // Smaller intervals for smoother animation
+      }, 25); // Smaller intervals for smoother animation
     },
     pauseCycle() {
       this.isHovering = true;
@@ -144,7 +168,7 @@ export default {
   bottom: 0;
   width: 100%;
   height: 60%;
-  background: linear-gradient(to top, #262626, transparent);
+  background: linear-gradient(to top, #181818, transparent);
 }
 
 
@@ -165,14 +189,19 @@ export default {
   margin: 5px 0;
   max-width: 400px;
 }
+
 .buy-btn {
   background-color: #fff;
   padding: 10px 50px;
-  margin-top: 5px;
+  margin-top: 3px;
   border-radius: 5px;
   color: black;
   text-decoration: none;
+  display: inline-block;
 }
+
+
+
 .original-price {
   text-decoration: line-through;
   color: #fff;
@@ -220,7 +249,6 @@ export default {
   border-radius: 5px;
   transition: width 0.05s linear;
 }
-
 
 .progress-fill {
   height: 100%;
