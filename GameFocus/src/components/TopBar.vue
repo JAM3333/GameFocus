@@ -1,7 +1,7 @@
 <template>
   <v-app-bar app color="black" dark>
     <!-- Logo Section -->
-    <v-btn icon>
+    <v-btn :to="{path: '/'}" icon>
       <img src="@/assets/logo.png" alt="Logo" style="max-width: 40px;">
     </v-btn>
 
@@ -14,7 +14,7 @@
     <v-menu class="genres-list" v-model="menuVisible" offset-y>
       <template v-slot:activator="{ on, attrs }">
         <v-btn text v-bind="attrs" v-on="on" @mouseenter="menuVisible = true">
-          Genres
+          Platform
           <v-icon right>mdi-menu-down</v-icon>
         </v-btn>
       </template>
@@ -49,7 +49,7 @@ export default {
   data() {
     return {
       searchQuery: "",
-      genres: ['Action', 'Adventure', 'Fighting', 'Racing'],
+      genres: ['Epic Games', 'Steam', 'Ubisoft', 'EA Store'],
       menuVisible: false,
     };
   },
@@ -59,7 +59,7 @@ export default {
       this.menuVisible = false;
     },
     goToProfile() {
-      console.log("Navigating to profile...");
+      this.$router.push({ path: '/user-page', query: { q: this.searchQuery } });
     },
     performSearch() {
       if (this.searchQuery.trim()) {

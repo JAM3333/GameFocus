@@ -11,7 +11,10 @@
 
       <v-card-subtitle>
         <div class="price-section">
-          <span class="price">{{ dealPrice === 0 ? "FREE" : `$${dealPrice}` }}</span>
+        <span v-if="priceInfo && priceInfo.deals && priceInfo.deals.length > 0" class="price">
+          {{ priceInfo.deals[0].price.amount }}
+        </span>
+          <span v-else class="price">No price available</span>
         </div>
       </v-card-subtitle>
 
@@ -48,8 +51,15 @@
       dealPrice: {
         type: String,
         required: false,
-        default: "-1",
+        default: " price not found",
       },
+      priceInfo: {
+        type: Object,
+        required: true,
+        default: () => ({
+          deals: [{price:{amount: 1}}],
+        }),
+    },
       url: {
         type: String,
         required: false,
@@ -94,6 +104,7 @@
     },
     mounted() {
       this.fetchGameInfo();
+      console.log(this.priceInfo)
     },
   };
   </script>

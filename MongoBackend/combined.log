@@ -29,3 +29,5 @@
 {"level":"info","message":"[Tue, 10 Dec 2024 07:31:34 GMT] GET /protected-route 200 27.727 ms - ::ffff:127.0.0.1 - User-Agent: insomnia/10.2.0","timestamp":"2024-12-10T07:31:34.765Z"}
 {"level":"info","message":"[Tue, 10 Dec 2024 07:31:50 GMT] GET /protected-route 401 1.365 ms - ::ffff:127.0.0.1 - User-Agent: insomnia/10.2.0","timestamp":"2024-12-10T07:31:50.677Z"}
 {"level":"info","message":"[Tue, 10 Dec 2024 07:31:54 GMT] GET /protected-route 200 5.800 ms - ::ffff:127.0.0.1 - User-Agent: insomnia/10.2.0","timestamp":"2024-12-10T07:31:54.297Z"}
+{"level":"info","message":"[Tue, 10 Dec 2024 11:12:04 GMT] GET / 404 4.222 ms - ::1 - User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0","timestamp":"2024-12-10T11:12:04.672Z"}
+{"level":"info","message":"[Tue, 10 Dec 2024 11:12:08 GMT] GET /login 404 1.235 ms - ::1 - User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0","timestamp":"2024-12-10T11:12:08.427Z"}
