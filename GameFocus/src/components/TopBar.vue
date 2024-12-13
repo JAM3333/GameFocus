@@ -1,7 +1,7 @@
 <template>
   <v-app-bar app color="black" dark>
     <!-- Logo Section -->
-    <v-btn icon>
+    <v-btn :to="{path: '/'}" icon>
       <img src="@/assets/logo.png" alt="Logo" style="max-width: 40px;">
     </v-btn>
 
@@ -59,7 +59,7 @@ export default {
       this.menuVisible = false;
     },
     goToProfile() {
-      console.log("Navigating to profile...");
+      this.$router.push({ path: '/user-page', query: { q: this.searchQuery } });
     },
     performSearch() {
       if (this.searchQuery.trim()) {

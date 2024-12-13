@@ -2,7 +2,7 @@
       
 <v-app>
    <div class="d-flex ga-8 mt-20 flex-column" id="Background">
-      <v-btn :to="{path: '/home'}" density="comfortable" icon="mdi-arrow-left-bold-outline" size="x-large" style="margin: 10px 10px;"></v-btn>
+      <v-btn :to="{path: '/'}" density="comfortable" icon="mdi-arrow-left-bold-outline" size="x-large" style="margin: 10px 10px;"></v-btn>
    </div>
     <v-main id="Background" class="d-flex align-center justify-center ga-8 mt-20 flex-column">
  <v-alert id="error" v-if="generalError" type="error">{{ generalError }}</v-alert>
