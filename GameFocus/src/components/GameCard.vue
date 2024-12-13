@@ -11,7 +11,10 @@
 
       <v-card-subtitle>
         <div class="price-section">
-          <span class="price">{{ priceInfo.deals[0].price.amount }}</span>
+        <span v-if="priceInfo && priceInfo.deals && priceInfo.deals.length > 0" class="price">
+          {{ priceInfo.deals[0].price.amount }}
+        </span>
+          <span v-else class="price">No price available</span>
         </div>
       </v-card-subtitle>
 
