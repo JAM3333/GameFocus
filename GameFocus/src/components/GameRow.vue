@@ -19,14 +19,14 @@
       </v-row>
     </v-container>
   </template>
-  
+
   <script>
   import axios from "axios";
-  import GameCard from "./GameCard.vue"; 
-  
+  import GameCard from "./GameCard.vue";
+
   export default {
     components: {
-      GameCard, 
+      GameCard,
     },
     data() {
       return {
@@ -44,13 +44,13 @@
             this.saleItems = items.map((item) => ({
               title: item.title,
               gameId: item.id,
-              dealPrice: item.deal.price.amount.toFixed(2), 
-              regularPrice: item.deal.regular.amount.toFixed(2), 
-              discount: item.deal.cut, 
-              shop: item.deal.shop.name, 
-              url: item.deal.url, 
+              dealPrice: item.deal.price.amount.toFixed(2),
+              regularPrice: item.deal.regular.amount.toFixed(2),
+              discount: item.deal.cut,
+              shop: item.deal.shop.name,
+              url: item.deal.url,
               drm: item.deal.drm.map((drm) => drm.name).join(", "),
-              platform: item.deal.platforms.map((platform) => platform.name).join(", "), 
+              platform: item.deal.platforms.map((platform) => platform.name).join(", "),
             }));
             this.saleItems.forEach(element => {
               console.log(element.drm)
@@ -67,4 +67,3 @@
     },
   };
   </script>
-  
