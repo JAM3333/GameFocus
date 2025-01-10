@@ -20,6 +20,7 @@
     </v-container>
   </template>
 
+
   <script>
   import axios from "axios";
   import GameCard from "./GameCard.vue";
@@ -27,6 +28,7 @@
 
   export default {
     components: {
+      GameCard,
       GameCard,
     },
     data() {
@@ -49,3 +51,4 @@
     },
   };
   </script>
+
