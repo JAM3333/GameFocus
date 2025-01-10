@@ -4,26 +4,26 @@
       <v-col cols="12" md="8" class="slider-wrapper">
         <div
           class="image-wrapper"
-          v-for="(image, index) in images"
+          v-for="(item, index) in items"
           :key="index"
           v-show="currentIndex === index"
           @mouseover="pauseCycle"
           @mouseleave="resumeCycle"
         >
         <div class="image-gradient"></div>
-          <img :src="image.src" alt="slider image" class="slider-image" />
+          <img :src="item.src" alt="slider image" class="slider-image" />
           <div
             class="description"
           >
-            <h1>{{ image.title }}</h1>
-            <p class="extended-description">{{ image.description }}</p>
+            <h1>{{ item.title }}</h1>
+            <p class="extended-description">{{ item.description }}</p>
             <p class="price">
-              <span class="discount">{{ image.discount }}</span>
-              <span class="original-price">{{ image.originalPrice }}</span>
-              <span class="reduced-price">{{ image.reducedPrice }}</span>
+              <span class="discount">{{ item.discount }}</span>
+              <span class="original-price">{{ item.originalPrice }}</span>
+              <span class="reduced-price">{{ item.reducedPrice }}</span>
             </p>
             <a
-              :href="image.storeLink"
+              :href="item.storeLink"
               target="_blank"
               rel="noopener noreferrer"
               class="buy-btn"
@@ -34,7 +34,7 @@
         </div>
         <div class="progress-bars">
           <div
-            v-for="(image, index) in images"
+            v-for="(item, index) in items"
             :key="index"
             class="progress-bar"
             :class="{ active: index === currentIndex }"
@@ -55,7 +55,7 @@
 export default {
   data() {
     return {
-      images: [
+      items: [
         {
           src: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/header.jpg?t=1729703045",
           title: "Counter Strike 2",
@@ -103,7 +103,7 @@ export default {
         if (this.progress < 100) {
           this.progress += 0.5; // Adjust the increment for desired animation speed
         } else {
-          this.nextImage();
+          this.nextItem();
         }
       }, 25); // Smaller intervals for smoother animation
     },
@@ -115,9 +115,9 @@ export default {
       this.isHovering = false;
       this.startCycle();
     },
-    nextImage() {
+    nextItem() {
       this.progress = 0;
-      this.currentIndex = (this.currentIndex + 1) % this.images.length;
+      this.currentIndex = (this.currentIndex + 1) % this.items.length;
     },
     jumpTo(index) {
       this.progress = 0;
