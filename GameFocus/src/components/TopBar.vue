@@ -7,7 +7,6 @@
 
     <!-- Navigation Links -->
     <v-btn text href="/">Home</v-btn>
-    <v-btn text href="/about">About Us</v-btn>
     <v-btn text href="/info">Info</v-btn>
 
     <!-- Dropdown Menu -->
@@ -90,7 +89,7 @@ export default {
   flex-wrap: wrap;
   max-width: 30rem;
   margin-top: 4rem;
-  margin-left: 19.75rem;
+  margin-left: 13rem;
 }
 
 /* User Profile Icon Style */

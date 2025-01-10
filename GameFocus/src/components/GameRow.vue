@@ -19,14 +19,15 @@
       </v-row>
     </v-container>
   </template>
-  
+
   <script>
   import axios from "axios";
-  import GameCard from "./GameCard.vue"; 
-  
+  import GameCard from "./GameCard.vue";
+  import { FetchDeals } from "../javascript/GameFunctions.js"; // Import the function
+
   export default {
     components: {
-      GameCard, 
+      GameCard,
     },
     data() {
       return {
@@ -34,37 +35,17 @@
       };
     },
     methods: {
-      fetchDeals() {
-        axios
-          .get(
-            `https://api.isthereanydeal.com/deals/v2?key=${import.meta.env.VITE_API_KEY}&limit=16`
-          )
-          .then((response) => {
-            const items = response.data.list;
-            this.saleItems = items.map((item) => ({
-              title: item.title,
-              gameId: item.id,
-              dealPrice: item.deal.price.amount.toFixed(2), 
-              regularPrice: item.deal.regular.amount.toFixed(2), 
-              discount: item.deal.cut, 
-              shop: item.deal.shop.name, 
-              url: item.deal.url, 
-              drm: item.deal.drm.map((drm) => drm.name).join(", "),
-              platform: item.deal.platforms.map((platform) => platform.name).join(", "), 
-            }));
-            this.saleItems.forEach(element => {
-              console.log(element.drm)
-
-            });
-          })
-          .catch((error) => {
-            console.error("Failed to fetch sale items:", error);
-          });
+      async loadSaleItems() {
+        try {
+          this.saleItems = await FetchDeals(16);
+          console.log(this.saleItems);
+        } catch (error) {
+          console.error("Failed to load sale items:", error);
+        }
       },
     },
     mounted() {
-      this.fetchDeals();
+      this.loadSaleItems();
     },
   };
   </script>
-  
