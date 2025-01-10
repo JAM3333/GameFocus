@@ -24,15 +24,17 @@ const isTokenBlacklist = (req, res, next) => {
 
 router.post('/login', async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { username, email, password } = req.body;
+        console.log(req.body);
 
-        if (!email || !password) {
-            return res.status(400).json({ message: 'Email or password is required' });
+        if ((email==="" && username==="") || !password) {
+            return res.status(400).json({ message: 'Email, Username or password is required' });
         }
 
         const db  = getDB(process.env.DB_NAME);
-
-        const user = await db.collection('users').findOne({ email });
+        const search = email !== "" ? email : username;
+        console.log(search);
+        const user = await db.collection('users').findOne({search});
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
@@ -59,12 +61,12 @@ router.post('/login', async (req, res) => {
 router.post('/register', async (req, res) => {
     try {
         const { username, email, password } = req.body;
-
+        console.log(username,email,password);
         if (!username || !email || !password) {
             return res.status(400).json({ message: 'All fields are required' });
         }
-
-        const db = getDB(process.env.DB_NAME);
+        const db = getDB();
+        console.log(req.body);
         const existingUser = await db.collection('users').findOne({ $or: [{ username }, { email }] });
         if (existingUser) {
             return res.status(400).json({ message: 'Username or email already exists' });
@@ -83,9 +85,9 @@ router.post('/register', async (req, res) => {
             // Continue with registration even if email fails
         }
 
-        res.status(201).json({ 
+        res.status(201).json({
             message: 'User registered successfully. Please check your email to verify your account.',
-            userId: result.insertedId 
+            userId: result.insertedId
         });
     } catch (error) {
         console.error('Error during registration:', error);
@@ -97,7 +99,7 @@ router.post('/register', async (req, res) => {
 router.get('/verify/:token', async (req, res) => {
     try {
         const { token } = req.params;
-        const db = getDB(process.env.DB_NAME);
+        const db = getDB();
 
         // Find user with matching token and token not expired
         const user = await db.collection('users').findOne({
@@ -106,15 +108,15 @@ router.get('/verify/:token', async (req, res) => {
         });
 
         if (!user) {
-            return res.status(400).json({ 
-                message: 'Invalid or expired verification token. Please register again.' 
+            return res.status(400).json({
+                message: 'Invalid or expired verification token. Please register again.'
             });
         }
 
         // Update user as verified
         await db.collection('users').updateOne(
             { _id: user._id },
-            { 
+            {
                 $set: { isVerified: true },
                 $unset: { verificationToken: "", verificationExpires: "" }
             }

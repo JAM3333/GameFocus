@@ -40,7 +40,6 @@ export default {
       searchQuery: this.$route.query.q || "",
       games: [],
       gameIds: [],
-      tempgames: [],
     };
   },
   watch: {

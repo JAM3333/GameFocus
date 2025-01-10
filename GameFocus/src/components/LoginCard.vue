@@ -1,5 +1,5 @@
 <template>
-      
+
 <v-app>
    <div class="d-flex ga-8 mt-20 flex-column" id="Background">
       <v-btn :to="{path: '/'}" density="comfortable" icon="mdi-arrow-left-bold-outline" size="x-large" style="margin: 10px 10px;"></v-btn>
@@ -10,7 +10,7 @@
                 <v-btn-toggle v-model="toggle_one" mandatory width="34vw">
                     <v-btn @click="pageToLogin()" width="17vw">Login</v-btn>
                     <v-btn @click="pageToSignup()" width="17vw">Sign Up</v-btn>
-                </v-btn-toggle> 
+                </v-btn-toggle>
 
                 <!-- LOGIN -->
                 <form v-if="currentPageIsLogin" ref="form" @submit.prevent="login()" style="margin-top: 60px;">
@@ -49,7 +49,7 @@
 
                <!-- SIGNUP -->
                <form v-if="currentPageIsSignup" ref="form" @submit.prevent="signup()" style="margin-top: 35px;">
-                  <v-text-field 
+                  <v-text-field
                      v-model="formSignup.email"
                      name="email"
                      label="Email"
@@ -66,7 +66,7 @@
                      placeholder="username"
                      required
                   ></v-text-field>
-                  
+
                   <v-text-field
                      v-model="formSignup.password"
                      name="password"
@@ -78,13 +78,13 @@
                   <v-btn type="submit" class="mt-4" color="primary" value="log in" width="20vw" >Sign Up</v-btn>
                </form>
             </v-card>
-     
+
     </v-main>
 </v-app>
 
 
 </template>
- 
+
 <style scoped>
    p:hover {
       color: #07B5FF;
@@ -92,7 +92,7 @@
    }
    p {
       margin-top: 0px;
-   } 
+   }
 
    #Background {
       background: url('../assets/bg_login_modified.jpg') no-repeat center center fixed !important;
@@ -100,7 +100,7 @@
    #error {
       position: absolute;
       top: 1vh;
-   }        
+   }
 </style>
  <script>
  import axios from "axios";
@@ -126,7 +126,7 @@ import { generateCodeFrame } from "vue/compiler-sfc";
        formSignup: {
 
        }
-       
+
      };
    },
    methods: {
@@ -142,15 +142,15 @@ import { generateCodeFrame } from "vue/compiler-sfc";
 
       async login() {
          // LOGIN WITH USERNAME
-         if (this.formLogin.email=='') {
             const loginData = {
-               Username: this.formLogin.username,
-               Password: this.formLogin.password
+              username: this.formLogin.username,
+              email: this.formLogin.email,
+              password: this.formLogin.password
             };
 
             console.log(loginData);
 
-            await axios.post("http://" + import.meta.env.VITE_SERVER_IP + ":" + import.meta.env.VITE_SERVER_PORT + "/login/user", loginData)
+            await axios.post("http://" + import.meta.env.VITE_SERVER_IP + ":" + import.meta.env.VITE_SERVER_PORT + "/auth/login", loginData)
             .then((response) => {
                console.log("answer from server:", response.data);
                let token = response.data;
@@ -159,45 +159,22 @@ import { generateCodeFrame } from "vue/compiler-sfc";
             })
             .catch((error) => {
                console.log("error recieved");
-               console.error("Error with the GET request:", error);
+               console.error("Error with the Login request:", error);
             });
-         }
-
-         // LOGIN WITH EMAIL
-         else {
-            const loginData = {
-               Email: this.formLogin.email,
-               Password: this.formLogin.password
-            };
-
-            console.log(loginData);
-
-            await axios.post("http://" + import.meta.env.VITE_SERVER_IP + ":" + import.meta.env.VITE_SERVER_PORT + "/login/email", loginData)
-            .then((response) => {
-               console.log("answer from server:", response.data);
-               let token = response.data;
-               localStorage.setItem('token', token);
-               this.$router.push({ path: '/home' });
-            })
-            .catch((error) => {
-               console.log("error recieved");
-               console.error("Error with the GET request:", error);
-            });
-         }
       },
       async signup() {
          const signupData = {
-            Email: this.formSignup.email,
-            Username: this.formSignup.username,
-            Password: this.formSignup.password
+            email: this.formSignup.email,
+            username: this.formSignup.username,
+            password: this.formSignup.password
          };
 
          console.log(signupData);
 
-         await axios.post("http://" + import.meta.env.VITE_SERVER_IP + ":" + import.meta.env.VITE_SERVER_PORT + "/signup", signupData)
+         await axios.post("http://" + import.meta.env.VITE_SERVER_IP + ":" + import.meta.env.VITE_SERVER_PORT + "/auth/register", signupData)
          .then((response) => {
             console.log("answer from server:", response.data);
-            if (response.status === 200) {
+            if (response.status === 201) {
             alert("Signup successful! Please check your email to verify your account.");
             this.pageToLogin(); // Switch to the login page
             }
