@@ -13,8 +13,7 @@
                 </v-btn-toggle>
 
                 <!-- LOGIN -->
-                <form v-if="currentPageIsLogin" ref="form" @submit.prevent="login()" style="margin-top: 60px;">
-
+                <form v-if="currentPageIsLogin" ref="form" @submit.prevent="login()" style="margin-top: 60px">
                   <v-text-field
                   v-if="currentLoginMethodUsername"
                      v-model="formLogin.username"
@@ -22,7 +21,8 @@
                      label="Username"
                      type="text"
                      placeholder="username"
-                     required
+                  hide-details="true"
+                    required
                   ></v-text-field>
                   <v-text-field
                   v-if="!currentLoginMethodUsername"
@@ -31,11 +31,11 @@
                      label="Email"
                      type="email"
                      placeholder="username"
+                  hide-details="true"
                      required
                   ></v-text-field>
-                  <p @click="toggleEmailLogin()" v-if="currentLoginMethodUsername">login with email instead</p>
-                  <p @click="toggleEmailLogin()" v-if="!currentLoginMethodUsername">login with username instead</p>
-
+                  <p @click="toggleEmailLogin()" class="mb-4" v-if="currentLoginMethodUsername">login with email instead</p>
+                  <p @click="toggleEmailLogin()" class="mb-4" v-if="!currentLoginMethodUsername">login with username instead</p>
                   <v-text-field
                      v-model="formLogin.password"
                      name="password"
@@ -148,18 +148,17 @@ import { generateCodeFrame } from "vue/compiler-sfc";
               password: this.formLogin.password
             };
 
-            console.log(loginData);
 
             await axios.post("http://" + import.meta.env.VITE_SERVER_IP + ":" + import.meta.env.VITE_SERVER_PORT + "/auth/login", loginData)
             .then((response) => {
                console.log("answer from server:", response.data);
                let token = response.data;
                localStorage.setItem('token', token);
-               this.$router.push({ path: '/home' });
+               this.$router.push({ path: '/' });
             })
             .catch((error) => {
-               console.log("error recieved");
-               console.error("Error with the Login request:", error);
+              this.generalError = error.response.data.message;
+              console.error("Error with the Login request:", error);
             });
       },
       async signup() {
@@ -169,20 +168,18 @@ import { generateCodeFrame } from "vue/compiler-sfc";
             password: this.formSignup.password
          };
 
-         console.log(signupData);
 
          await axios.post("http://" + import.meta.env.VITE_SERVER_IP + ":" + import.meta.env.VITE_SERVER_PORT + "/auth/register", signupData)
          .then((response) => {
             console.log("answer from server:", response.data);
             if (response.status === 201) {
             alert("Signup successful! Please check your email to verify your account.");
-            this.pageToLogin(); // Switch to the login page
+            this.pageToLogin();
             }
          })
          .catch((error) => {
-            console.log("error received");
             console.error("Error with the POST request:", error);
-            this.generalError = "Signup failed. Please try again.";
+            this.generalError = error.response.data.message;
          });
       },
       pageToSignup() {
@@ -192,11 +189,13 @@ import { generateCodeFrame } from "vue/compiler-sfc";
       pageBack(){
          this.$router.push({ name: 'Home'});
       },
-      pageToLogin() {
-         this.currentPageIsLogin = true;
-         this.currentPageIsSignup = false;
-      },
-      toggleEmailLogin() {
+     pageToLogin() {
+       this.currentPageIsLogin = true;
+       this.currentPageIsSignup = false;
+     },
+     toggleEmailLogin() {
+          this.formLogin.username = "";
+          this.formLogin.email = "";
          this.currentLoginMethodUsername = !this.currentLoginMethodUsername;
       }
    },
