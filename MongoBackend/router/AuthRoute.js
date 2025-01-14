@@ -31,10 +31,10 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ message: 'Email, Username or password is required' });
         }
 
-        const db  = getDB(process.env.DB_NAME);
+        const db  = getDB();
         const search = email !== "" ? email : username;
-        console.log(search);
         const user = await db.collection('users').findOne({search});
+        console.log(user)
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
@@ -66,7 +66,6 @@ router.post('/register', async (req, res) => {
             return res.status(400).json({ message: 'All fields are required' });
         }
         const db = getDB();
-        console.log(req.body);
         const existingUser = await db.collection('users').findOne({ $or: [{ username }, { email }] });
         if (existingUser) {
             return res.status(400).json({ message: 'Username or email already exists' });
@@ -123,7 +122,7 @@ router.get('/verify/:token', async (req, res) => {
         );
 
         // Redirect to frontend with success message
-        res.redirect('/verification-success.html');
+        res.redirect('http://localhost:3000/');
     } catch (error) {
         console.error('Error during email verification:', error);
         res.status(500).json({ message: 'Server error during verification' });

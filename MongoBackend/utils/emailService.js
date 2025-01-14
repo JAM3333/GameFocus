@@ -20,7 +20,7 @@ transporter.verify(function(error, success) {
 
 // Send verification email
 const sendVerificationEmail = async (email, token) => {
-    const verificationUrl = `http://localhost:3000/auth/verify/${token}`;
+    const verificationUrl = `http://localhost:3004/auth/verify/${token}`;
 
     const ACCESS_TOKEN = await oAuth2Client.getAccessToken();
     const transporter = nodemailer.createTransport({
@@ -47,12 +47,10 @@ const sendVerificationEmail = async (email, token) => {
         to: email,
         subject: 'Verify your GameFocus account',
         html: `
-            <h1>Welcome to HomeSphere!</h1>
+            <h1>Welcome to GameFocus!</h1>
             <p>Please verify your email address by clicking the link below:</p>
             <a href="${verificationUrl}" style="display: inline-block; padding: 10px 20px; background-color: #4fd1c5; color: white; text-decoration: none; border-radius: 5px;">Verify Email</a>
-            <p>This link will expire in 24 hours.</p>
-            <p>If you didn't create an account, you can safely ignore this email.</p>
-        `
+            <p>This link will expire in 24 hours.</p>        `
     };
 
     try {
