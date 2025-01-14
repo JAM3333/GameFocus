@@ -19,23 +19,23 @@
       <div class="price-section">
         <!-- Check if price is available and not equal to 'no price found' -->
         <span v-if="priceInfo?.deals?.length > 0 && priceInfo.deals[0]?.price?.amount !== 'no price found'" class="price">
-          {{ priceInfo.deals[0]?.price?.amount }}
+          {{ priceInfo.deals[0]?.price?.amount + "€"}}
           <!-- Check for the currency symbol, default to € if not found -->
-          {{ priceInfo.deals[0]?.price?.currency || '€' }}
         </span>
         <!-- Fallback message if no valid price is found -->
-        <span v-else class="price">{{ dealPrice || 'Price not available' }}</span>
+        <span v-else class="price">{{ dealPrice + "€" || 'Price not available' }} </span>
       </div>
     </v-card-subtitle>
 
     <v-card-actions class="platform-section">
-      <v-img
-        v-for="(platformLogo, index) in platforms"
-        :key="index"
-        :src="platformLogo"
-        class="platform-logo"
-        contain
-      ></v-img>
+      <div v-for="(platformLogo, index) in platforms" :key="index" class="platform-item">
+        <v-img
+          :src="platformLogo.logo"
+          class="platform-logo"
+          contain
+        ></v-img>
+        <span class="platform-name">{{ platformLogo.name }}</span>
+      </div>
     </v-card-actions>
 
     <v-btn icon class="bookmark-btn">
@@ -66,7 +66,7 @@ export default {
       type: Object,
       required: false,
       default: () => ({
-        deals: [{ price: { amount: "no price found", currency: "€" } }],
+        deals: [{ price: { amount: "no price found"} }],
       }),
     },
     url: {
@@ -94,30 +94,44 @@ export default {
           `https://api.isthereanydeal.com/games/info/v2?key=${import.meta.env.VITE_API_KEY}&id=${this.gameId}`
         )
         .then((response) => {
-          const gameInfo = response.data;
-          console.log(gameInfo);  // Debug to check if currency data is present
-          if (gameInfo) {
+          // Check if the response has the expected data structure
+          console.log("API Response:", response);
+          const gameInfo = response?.data;  // Ensure response.data exists
+
+          if (gameInfo && gameInfo.assets) {
             this.image = gameInfo.assets["banner400"] || this.defaultImage;
+            console.log("Game Info:", gameInfo);
+
             // Check if drm exists and is an array before using map
             if (Array.isArray(gameInfo.drm)) {
-              this.platforms = gameInfo.drm.map((drm) => this.getPlatformLogo(drm));
+              this.platforms = gameInfo.drm.map((drm) => this.getPlatformInfo(drm));
             } else {
               this.platforms = [];  // Fallback if drm is not an array
             }
+          } else {
+            console.error("No game info found in the response.");
           }
         })
         .catch((error) => {
           console.error(`Error fetching game info: ${this.gameId}`, error);
         });
     },
-    getPlatformLogo(platformName) {
-      const platformLogos = {
-        Steam: "https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg",
-        Epic: "https://upload.wikimedia.org/wikipedia/commons/6/63/Epic_Games_logo.svg",
+    getPlatformInfo(platformName) {
+      const platformDetails = {
+        Steam: {
+          logo: "https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg",
+          name: "Steam",
+        },
+        Epic: {
+          logo: "https://upload.wikimedia.org/wikipedia/commons/6/63/Epic_Games_logo.svg",
+          name: "Epic Games",
+        },
+        // Add more platforms if needed
       };
-      return platformLogos[platformName] || "https://via.placeholder.com/24";
+      return platformDetails[platformName] || { logo: "https://via.placeholder.com/24", name: "Unknown Platform" };
     },
   },
+
   mounted() {
     this.fetchGameInfo();
   },
@@ -137,13 +151,24 @@ export default {
 
 .platform-section {
   display: flex;
-  justify-content: flex-start;
+  flex-wrap: wrap;
   gap: 10px;
+}
+
+.platform-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .platform-logo {
   width: 24px;
   height: 24px;
+}
+
+.platform-name {
+  font-size: 0.9rem;
+  font-weight: bold;
 }
 
 .price {
