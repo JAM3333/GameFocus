@@ -1,8 +1,8 @@
 <template>
   <v-app-bar app color="black" dark>
     <!-- Logo Section -->
-    <v-btn :to="{path: '/'}" icon>
-      <img src="@/assets/logo.png" alt="Logo" style="max-width: 40px;">
+    <v-btn :to="{ path: '/' }" icon>
+      <img src="@/assets/logo.png" alt="Logo" style="max-width: 40px;" />
     </v-btn>
 
     <!-- Navigation Links -->
@@ -12,13 +12,22 @@
     <!-- Dropdown Menu -->
     <v-menu class="genres-list" v-model="menuVisible" offset-y>
       <template v-slot:activator="{ on, attrs }">
-        <v-btn text v-bind="attrs" v-on="on" @mouseenter="menuVisible = true">
+        <v-btn
+          text
+          v-bind="attrs"
+          v-on="on"
+          @mouseenter="menuVisible = true"
+        >
           Platform
           <v-icon right>mdi-menu-down</v-icon>
         </v-btn>
       </template>
       <v-list @mouseleave="menuVisible = false">
-        <v-list-item v-for="(genre, index) in genres" :key="index" @click="handleGenreClick(genre)">
+        <v-list-item
+          v-for="(genre, index) in genres"
+          :key="index"
+          @click="handleGenreClick(genre)"
+        >
           <v-list-item-title>{{ genre }}</v-list-item-title>
         </v-list-item>
       </v-list>
@@ -48,7 +57,7 @@ export default {
   data() {
     return {
       searchQuery: "",
-      genres: ['Epic Games', 'Steam', 'Ubisoft', 'EA Store'],
+      genres: ["Epic Games", "Steam", "Ubisoft", "EA Store"],
       menuVisible: false,
     };
   },
@@ -58,11 +67,17 @@ export default {
       this.menuVisible = false;
     },
     goToProfile() {
-      this.$router.push({ path: '/user-page', query: { q: this.searchQuery } });
+      this.$router.push({
+        path: "/user-page",
+        query: { q: this.searchQuery },
+      });
     },
     performSearch() {
       if (this.searchQuery.trim()) {
-        this.$router.push({ path: '/search-page', query: { q: this.searchQuery } });
+        this.$router.push({
+          path: "/search-page",
+          query: { q: this.searchQuery },
+        });
         this.searchQuery = "";
       }
     },
@@ -112,7 +127,7 @@ export default {
   color: #bbb;
 }
 
-.search{
+.search {
   margin-top: 20px;
 }
 </style>
