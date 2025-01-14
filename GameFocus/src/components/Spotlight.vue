@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid style="background-color: #181818; height:auto; padding:50px; overflow: hidden;">
+  <v-container fluid style="background-color: #181818; width:100%; height:auto; padding:50px; overflow: hidden;">
     <v-row justify="center" align="center" class="image-slider">
       <v-col cols="12" md="8" class="slider-wrapper">
         <div
@@ -52,45 +52,11 @@
 </template>
 
 <script>
+import { FetchDeals, FetchGameInfo } from "../javascript/GameFunctions.js";
 export default {
   data() {
     return {
-      items: [
-        {
-          src: "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/header.jpg?t=1729703045",
-          title: "Counter Strike 2",
-          storeLink: "https://store.steampowered.com/app/730/CounterStrike_2/",
-          originalPrice: "$59.99",
-          reducedPrice: "$14.99",
-          discount: "-75%",
-          description:
-            "Experience a modern guerrilla revolution with stunning landscapes, instinctive shooting, and endless gameplay options.",
-        },
-        {
-          src: "https://assets.isthereanydeal.com/018d937e-e9b6-713b-83f6-4f060b9ca19e/banner400.jpg?t=1731994281",
-          title: "Game 2",
-          originalPrice: "$49.99",
-          reducedPrice: "$24.99",
-          discount: "-50%",
-          description: "An exciting adventure game with captivating visuals and storylines.",
-        },
-        {
-          src: "https://assets.isthereanydeal.com/018d937e-e9b8-7125-9c92-5794c0e0e29c/banner400.jpg?t=1732878634",
-          title: "Game 3",
-          originalPrice: "$49.99",
-          reducedPrice: "$24.99",
-          discount: "-50%",
-          description: "An exciting adventure game with captivating visuals and storylines.",
-        },
-        {
-          src: "https://assets.isthereanydeal.com/018d937e-e9ad-72bf-8d8b-27d5f2b28cb5/banner400.jpg?t=1732950646",
-          title: "Game 4",
-          originalPrice: "$49.99",
-          reducedPrice: "$24.99",
-          discount: "-50%",
-          description: "An exciting adventure game with captivating visuals and storylines.",
-        },
-      ],
+      items: [], // Spotlight items
       currentIndex: 0,
       progress: 0,
       cycleInterval: null,
@@ -98,6 +64,33 @@ export default {
     };
   },
   methods: {
+    async loadSpotlightGames() {
+      try {
+        const allGames = await FetchDeals(5); // Fetch the list of spotlight games
+        console.log(allGames);
+
+        const spotlightGames = await Promise.all(
+          allGames.map(async (game) => {
+            const gameInfo = await FetchGameInfo(game.gameId); // Fetch detailed game info
+            const imageSrc = gameInfo?.assets?.banner400 || `https://cdn.example.com/games/${game.gameId}.jpg`; // Fallback to default image
+            return {
+              src: imageSrc,
+              title: game.title,
+              description: `Available on: ${game.platform}, DRM: ${game.drm}`,
+              discount: `-${game.discount}%`,
+              originalPrice: `$${game.regularPrice}`,
+              reducedPrice: `$${game.dealPrice}`,
+              storeLink: game.url,
+            };
+          })
+        );
+        console.log(spotlightGames);
+        this.items = spotlightGames;
+      } catch (error) {
+        console.error("Failed to load spotlight games:", error);
+      }
+    }
+    ,
     startCycle() {
       this.cycleInterval = setInterval(() => {
         if (this.progress < 100) {
@@ -125,6 +118,7 @@ export default {
     },
   },
   mounted() {
+    this.loadSpotlightGames();
     this.startCycle();
   },
   beforeDestroy() {

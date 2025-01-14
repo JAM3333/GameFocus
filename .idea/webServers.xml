@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="b01b6990-a769-4b64-9387-b5e819ffb3e8" name="Labor2040s">
+        <fileTransfer rootFolder="/home/jonas" accessType="SFTP" host="Labor2040s" port="22" sshConfigId="0a4cf4bc-6e9c-4ddf-a424-8f90ec562d1f" sshConfig="jonas@Labor2040s:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

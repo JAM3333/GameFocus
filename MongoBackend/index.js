@@ -9,6 +9,7 @@ const { connectDB, getDB } = require('./db/connectDB');
 const authMiddleware = require('./middleware/authMiddleware');
 const authRoute = require('./router/AuthRoute');
 //const docRoute = require('./router/DocRoute');
+const bookmarkRoute = require('./router/BookmarkRoute');
 
 const app = express();
 const port = 3004;
@@ -27,7 +28,6 @@ app.options('*', cors()); // Handle preflight requests
 
         await connectDB();
         const db = getDB();
-        console.log(db)
         app.use(express.static(path.join(__dirname, 'public')));
 
         app.get('/protected-route', authMiddleware, (req, res) => {
@@ -35,6 +35,7 @@ app.options('*', cors()); // Handle preflight requests
         });
 
         app.use('/auth', authRoute);
+        app.use('/bookmark', bookmarkRoute);
         //app.use('/docs', docRoute);
 
         app.listen(port, () => {

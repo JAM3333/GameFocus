@@ -50,4 +50,16 @@ export async function FetchDeals(limit) {
     return [];
   }
 }
+export async function FetchGameInfo(gameId) {
+  try {
+    const response = await axios.get(
+      `https://api.isthereanydeal.com/games/info/v2?key=${import.meta.env.VITE_API_KEY}&id=${gameId}`
+    );
+    const gameInfo = response.data; // Access game-specific data
+    return gameInfo || {};
+  } catch (error) {
+    console.error(`Error fetching game info for gameId: ${gameId}`, error);
+    return {};
+  }
+}
 
