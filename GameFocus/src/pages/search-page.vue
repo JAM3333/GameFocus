@@ -32,9 +32,10 @@
 <script>
 import GameCard from "@/components/GameCard.vue";
 import axios from "axios";
+import { GetPrices } from "../javascript/GameFunctions.js"; // Import the function
 
 export default {
-  components: { GameCard },
+  components: {GameCard},
   data() {
     return {
       searchQuery: this.$route.query.q || "",
@@ -53,7 +54,7 @@ export default {
   methods: {
     performSearch() {
       if (this.searchQuery.trim()) {
-        this.$router.push({ path: '/search-page', query: { q: this.searchQuery } });
+        this.$router.push({path: '/search-page', query: {q: this.searchQuery}});
         this.searchQuery = "";
       }
     },
@@ -77,34 +78,13 @@ export default {
         this.gameIds = this.tempgames.map(game => game.gameId);
 
         // Preise für die Spiele abrufen
-        await this.GetPrices(this.gameIds);
+
+        this.games = await GetPrices(this.gameIds, this.games, this.tempgames);
       } catch (error) {
         console.error("Error fetching games:", error);
       }
     },
 
-    async GetPrices(gameIds) {
-      try {
-        const response = await axios.post(
-          `https://api.isthereanydeal.com/games/prices/v3?key=${import.meta.env.VITE_API_KEY}&country=de`,
-          JSON.stringify(this.gameIds),
-        );
-
-        const prices = response.data;
-        console.log(this.tempgames);
-
-        this.tempgames = this.tempgames.map(game => {
-          const priceInfo = prices.find(item => item.id === game.gameId); // Finde das passende Objekt
-          game.priceInfo = priceInfo || { historyLow: {}, deals: [], id: game.gameId } // Füge das ganze Objekt hinzu
-          return game;
-        });
-        // Update the games array reactively by setting it to tempgames
-        this.games = [...this.tempgames]; // This triggers a reactivity update
-        console.log(this.tempgames)
-      } catch (error) {
-        console.error("Error fetching prices:", error);
-      }
-    },
   },
 };
 </script>
