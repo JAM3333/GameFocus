@@ -130,15 +130,6 @@ import { generateCodeFrame } from "vue/compiler-sfc";
      };
    },
    methods: {
-      onBeforeMount() {
-         this.loadFunc();
-      },
-      loadFunc() {
-         if (localStorage.token != 0) {
-            this.$router.push({ path: '/home' })
-         }
-         else {}
-      },
 
       async login() {
          // LOGIN WITH USERNAME
@@ -147,12 +138,11 @@ import { generateCodeFrame } from "vue/compiler-sfc";
               email: this.formLogin.email,
               password: this.formLogin.password
             };
-
-
             await axios.post("http://" + import.meta.env.VITE_SERVER_IP + ":" + import.meta.env.VITE_SERVER_PORT + "/auth/login", loginData)
             .then((response) => {
                console.log("answer from server:", response.data);
-               let token = response.data;
+               let token = response.data.token;
+               console.log(token);
                localStorage.setItem('token', token);
                this.$router.push({ path: '/' });
             })
