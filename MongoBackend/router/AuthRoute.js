@@ -25,20 +25,16 @@ const isTokenBlacklist = (req, res, next) => {
 router.post('/login', async (req, res) => {
     try {
         const { username, email, password } = req.body;
-        console.log(req.body);
 
         if ((email==="" && username==="") || !password) {
             return res.status(400).json({ message: 'Email, Username or password is required' });
         }
 
         const db  = getDB();
-        const search = email !== "" ? email : username;
-        const user = await db.collection('users').findOne({search});
-        console.log(user)
+        const user = await db.collection('users').findOne({$or: [{ username }, { email }]});
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if(!isPasswordValid) {
             return res.status(401).json({ message: 'Invalid email or password' });
@@ -49,7 +45,15 @@ router.post('/login', async (req, res) => {
             process.env.SECRET_KEY,
             { expiresIn: '2h'}
         );
+        const expireDate = new Date();
+        expireDate.setHours(expireDate.getHours() + 2);
 
+        await db.collection('users').updateOne(
+            { _id: user._id },
+            {
+                $set: { verificationToken: token, verificationExpires: expireDate }
+            }
+        );
         res.status(200).json({ message: 'Successfully logged in!', token });
 
     }catch(err) {
@@ -68,6 +72,8 @@ router.post('/register', async (req, res) => {
         const db = getDB();
         const existingUser = await db.collection('users').findOne({ $or: [{ username }, { email }] });
         if (existingUser) {
+            await db.collection('users').deleteOne(
+                { $or: [{ username }, { email }] });
             return res.status(400).json({ message: 'Username or email already exists' });
         }
 
@@ -128,6 +134,36 @@ router.get('/verify/:token', async (req, res) => {
         res.status(500).json({ message: 'Server error during verification' });
     }
 });
+
+
+// User token info
+router.get('/user/:token', async (req, res) => {
+    try {
+        const { token } = req.params;
+        const db = getDB();
+        console.log(token)
+        // Find user with matching token and token not expired
+        const test = await db.collection('users').findOne({
+            email: "esiduff@gmail.com",
+        });
+        const user = await db.collection('users').findOne({
+            verificationToken: token,
+            verificationExpires: { $gt: new Date() }
+        });
+        console.log(user)
+        if (!user) {
+            return res.status(400).json({
+                message: 'Invalid token'
+            });
+        }
+
+        res.status(200).json({ message: 'User found', username: user.username });
+    } catch (error) {
+        console.error('Error during email verification:', error);
+        res.status(500).json({ message: 'Server error during verification' });
+    }
+});
+
 
 router.post('/logout', async (req, res) => {
     const token = req.token;
