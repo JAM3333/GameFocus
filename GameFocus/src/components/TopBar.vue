@@ -28,7 +28,7 @@
           :key="index"
           @click="handleGenreClick(genre)"
         >
-          <v-list-item-title>{{ genre }}</v-list-item-title>
+          <v-list-item-title>{{ genre.name }}</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-menu>
@@ -57,26 +57,36 @@ export default {
   data() {
     return {
       searchQuery: "",
-      genres: ["Epic Games", "Steam", "Ubisoft", "EA Store"],
+      genres: [
+        { name: "Epic Games", url: "16" },
+        { name: "Steam", url: "61" },
+        { name: "GOG", url: "35" },
+        { name: "Game Planet", url: "27" },
+      ],
       menuVisible: false,
     };
   },
   methods: {
     handleGenreClick(genre) {
-      console.log(`Selected genre: ${genre}`);
+      console.log(`Selected store: ${genre.name}`);
       this.menuVisible = false;
+      // Navigate to the "GamesStore" page with the new shopId as a query parameter
+      this.$router.push({
+        path: '/games-store',
+        query: { shopId: genre.url }
+      });
     },
     goToProfile() {
       this.$router.push({
         path: "/user-page",
-        query: { q: this.searchQuery },
+        query: {q: this.searchQuery},
       });
     },
     performSearch() {
       if (this.searchQuery.trim()) {
         this.$router.push({
           path: "/search-page",
-          query: { q: this.searchQuery },
+          query: {q: this.searchQuery},
         });
         this.searchQuery = "";
       }
@@ -90,6 +100,7 @@ export default {
 .v-application .v-app-bar {
   background-color: #000000;
 }
+
 .v-btn {
   color: white;
 }

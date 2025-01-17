@@ -23,11 +23,15 @@ export async function GetPrices(gameIds,games,tempgames) {
     return [];
   }
 }
-export async function FetchDeals(limit) {
+export async function FetchDeals(limit,shop) {
   try {
-    const response = await axios.get(
-      `https://api.isthereanydeal.com/deals/v2?key=${import.meta.env.VITE_API_KEY}&limit=${limit}`
-    );
+
+    let url = `https://api.isthereanydeal.com/deals/v2?key=${import.meta.env.VITE_API_KEY}&limit=${limit}`
+    if(shop != undefined) {
+      url = `https://api.isthereanydeal.com/deals/v2?key=${import.meta.env.VITE_API_KEY}&limit=${limit}&shops=${shop}`
+    }
+
+    const response = await axios.get(url);
 
     // Verarbeiten der Daten
     const items = response.data.list;
