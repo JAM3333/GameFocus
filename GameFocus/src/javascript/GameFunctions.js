@@ -62,4 +62,28 @@ export async function FetchGameInfo(gameId) {
     return {};
   }
 }
+export async function FetchGames(query) {
+  try {
+    let games = [];
+    let gameIds = [];
+
+    const response = await fetch(`https://api.isthereanydeal.com/games/search/v1?key=${import.meta.env.VITE_API_KEY}&title=${query}`);
+    const data = await response.json();
+
+
+    let tempgames = data.map(game => ({
+      title: game.title || 'Unknown Title',
+      gameId: game.id,
+      priceInfo: null,
+    }));
+
+    gameIds = tempgames.map(game => game.gameId);
+
+
+    games = await GetPrices(gameIds, games, tempgames);
+    return games;
+  } catch (error) {
+    console.error("Error fetching games:", error);
+  }
+}
 

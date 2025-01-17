@@ -17,18 +17,24 @@
 
     <v-card-subtitle>
       <div class="price-section">
-        <!-- Check if price is available and not equal to 'no price found' -->
-        <span v-if="priceInfo?.deals?.length > 0 && priceInfo.deals[0]?.price?.amount !== 'no price found'" class="price">
-          {{ priceInfo.deals[0]?.price?.amount + "€"}}
-          <!-- Check for the currency symbol, default to € if not found -->
+        <span
+          v-if="priceInfo?.deals?.length > 0 && priceInfo.deals[0]?.price?.amount !== 'no price found'"
+          class="price"
+        >
+          {{ priceInfo.deals[0]?.price?.amount + "€" }}
         </span>
-        <!-- Fallback message if no valid price is found -->
-        <span v-else class="price">{{ dealPrice + "€" || 'Price not available' }} </span>
+        <span v-else class="price">
+          {{ dealPrice + "€" || "Price not available" }}
+        </span>
       </div>
     </v-card-subtitle>
 
     <v-card-actions class="platform-section">
-      <div v-for="(platformLogo, index) in platforms" :key="index" class="platform-item">
+      <div
+        v-for="(platformLogo, index) in platforms"
+        :key="index"
+        class="platform-item"
+      >
         <v-img
           :src="platformLogo.logo"
           class="platform-logo"
@@ -38,8 +44,15 @@
       </div>
     </v-card-actions>
 
-    <v-btn icon class="bookmark-btn">
-      <v-icon>mdi-bookmark</v-icon>
+    <v-btn
+      icon
+      class="bookmark-btn"
+      :class="bookmarked ? 'bookmark-remove' : 'bookmark-add'"
+      @click="changeBookmark"
+    >
+      <v-icon>
+        {{ bookmarked ? 'mdi-minus' : 'mdi-plus' }}
+      </v-icon>
     </v-btn>
   </v-card>
 </template>
@@ -83,6 +96,7 @@ export default {
   data() {
     return {
       image: "",
+      bookmarked: false,
       platforms: [],
       defaultImage: "https://www.freeiconspng.com/uploads/no-image-icon-11.PNG",
     };
@@ -94,15 +108,11 @@ export default {
           `https://api.isthereanydeal.com/games/info/v2?key=${import.meta.env.VITE_API_KEY}&id=${this.gameId}`
         )
         .then((response) => {
-          // Check if the response has the expected data structure
-          console.log("API Response:", response);
           const gameInfo = response?.data;  // Ensure response.data exists
 
           if (gameInfo && gameInfo.assets) {
             this.image = gameInfo.assets["banner400"] || this.defaultImage;
-            console.log("Game Info:", gameInfo);
 
-            // Check if drm exists and is an array before using map
             if (Array.isArray(gameInfo.drm)) {
               this.platforms = gameInfo.drm.map((drm) => this.getPlatformInfo(drm));
             } else {
@@ -130,10 +140,32 @@ export default {
       };
       return platformDetails[platformName] || { logo: "https://via.placeholder.com/24", name: "Unknown Platform" };
     },
+    async changeBookmark() {
+      try {
+        const response = await axios.post(
+          `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/bookmark/changebookmark`,
+          { game: this.gameId, token: localStorage.getItem("token") }
+        );
+        this.bookmarked = !this.bookmarked;
+      } catch (error) {
+        console.error("Error with the POST request:", error);
+      }
+    },
+    async isBookmarked() {
+      try {
+        const response = await axios.post(
+          `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/bookmark/isBookmarked`,
+          { game: this.gameId, token: localStorage.getItem("token") }
+        );
+        this.bookmarked = response?.data.bookmarked;
+      } catch (error) {
+        console.error("Error with the POST request:", error);
+      }
+    },
   },
-
   mounted() {
     this.fetchGameInfo();
+    this.isBookmarked();
   },
 };
 </script>
@@ -174,6 +206,14 @@ export default {
 .price {
   font-weight: bold;
   font-size: 1.2rem;
+}
+
+.bookmark-add {
+  background-color: #085772;
+}
+
+.bookmark-remove {
+  background-color: #c16868;
 }
 
 .bookmark-btn {

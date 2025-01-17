@@ -32,7 +32,7 @@
 <script>
 import GameCard from "@/components/GameCard.vue";
 import axios from "axios";
-import { GetPrices } from "../javascript/GameFunctions.js"; // Import the function
+import { FetchGames } from "../javascript/GameFunctions.js"; // Import the function
 
 export default {
   components: {GameCard},
@@ -59,30 +59,7 @@ export default {
       }
     },
     async fetchGames(query) {
-      try {
-        this.games = [];
-        this.gameIds = [];
-
-        const response = await fetch(`https://api.isthereanydeal.com/games/search/v1?key=${import.meta.env.VITE_API_KEY}&title=${query}`);
-        const data = await response.json();
-
-
-        // Map API response to games array
-        this.tempgames = data.map(game => ({
-          title: game.title || 'Unknown Title',
-          gameId: game.id,
-          priceInfo: null,
-        }));
-
-        // Game IDs in array schreiben
-        this.gameIds = this.tempgames.map(game => game.gameId);
-
-        // Preise für die Spiele abrufen
-
-        this.games = await GetPrices(this.gameIds, this.games, this.tempgames);
-      } catch (error) {
-        console.error("Error fetching games:", error);
-      }
+      this.games = await FetchGames(query)
     },
 
   },

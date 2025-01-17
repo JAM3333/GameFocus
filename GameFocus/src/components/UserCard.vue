@@ -12,7 +12,18 @@
     </v-container>
     <v-container>
       <v-row dense>
-
+        <v-col
+          v-for="(item, index) in bookmarks"
+          :key="index"
+          cols="4"
+          md="3"
+        >
+          <GameCard
+            :title="item.title"
+            :gameId="item.gameId"
+            :priceInfo="item.priceInfo"
+          />
+        </v-col>
       </v-row>
     </v-container>
   </div>

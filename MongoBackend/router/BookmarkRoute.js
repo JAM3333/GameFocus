@@ -27,7 +27,7 @@ router.get('/userbookmarks/:token', async (req, res) => {
 });
 
 
-router.post('/addbookmark', async (req, res) => {
+router.post('/changebookmark', async (req, res) => {
     try {
         const { game, token } = req.body;
         if (!game || !token) {
@@ -43,41 +43,103 @@ router.post('/addbookmark', async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        await db.collection('users').updateOne(
-            { _id: user._id },
-            {
-                $push: { bookmarks: game },
-            }
-        );
+        const isBookmarked = user.bookmarks.includes(game);
 
-        const existingBookmark = await db.collection('bookmarks').findOne({
-            game: game,
-        });
-        if (existingBookmark) {
-            await db.collection('bookmarks').updateOne(
-                { _id: existingBookmark._id },
+        if (isBookmarked) {
+            // Remove the game from the user's bookmarks array
+            await db.collection('users').updateOne(
+                { _id: user._id },
                 {
-                    $push: { users: user.email },
+                    $pull: { bookmarks: game },
                 }
             );
-            return res.status(201).json({ message: 'User bookmark added to existing game' });
+
+            // Remove the user from the bookmarks collection for the specific game
+            const existingBookmark = await db.collection('bookmarks').findOne({ game });
+            if (existingBookmark) {
+                await db.collection('bookmarks').updateOne(
+                    { _id: existingBookmark._id },
+                    {
+                        $pull: { users: user.email },
+                    }
+                );
+
+                // If no users remain associated with the game, remove the bookmark document
+                const updatedBookmark = await db.collection('bookmarks').findOne({ _id: existingBookmark._id });
+                if (updatedBookmark.users.length === 0) {
+                    await db.collection('bookmarks').deleteOne({ _id: existingBookmark._id });
+                }
+            }
+
+            return res.status(200).json({ message: 'Bookmark removed successfully' });
+        } else {
+            // Add the game to the user's bookmarks array
+            await db.collection('users').updateOne(
+                { _id: user._id },
+                {
+                    $addToSet: { bookmarks: game },
+                }
+            );
+
+            // Check if the bookmark already exists in the bookmarks collection
+            const existingBookmark = await db.collection('bookmarks').findOne({ game });
+            if (existingBookmark) {
+                // Add the user to the existing bookmark's users array
+                await db.collection('bookmarks').updateOne(
+                    { _id: existingBookmark._id },
+                    {
+                        $addToSet: { users: user.email },
+                    }
+                );
+                return res.status(201).json({ message: 'User bookmark added to existing game' });
+            }
+
+            // Create a new bookmark document
+            const bookmark = {
+                game: game,
+                users: [user.email],
+            };
+
+            const result = await db.collection('bookmarks').insertOne(bookmark);
+
+            return res.status(201).json({
+                message: 'New game added to list. User bookmark added.',
+                bookmarkId: result.insertedId,
+            });
+        }
+    } catch (error) {
+        console.error('Error during adding/removing bookmark:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+router.post('/isbookmarked', async (req, res) => {
+    try {
+        const { game, token } = req.body;
+        if (!game || !token) {
+            return res.status(400).json({ message: 'All fields are required' });
         }
 
-        const bookmark = new Bookmark(game);
-        bookmark.users.push(user.email);
+        const db = getDB();
+        const user = await db.collection('users').findOne({
+            verificationToken: token,
+            verificationExpires: { $gt: new Date() }
+        });
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
 
-        const result = await db.collection('bookmarks').insertOne(bookmark);
-
-
+        const isBookmarked = user.bookmarks.includes(game);
         res.status(201).json({
             message: 'New game added to list. User bookmark added.',
-            bookmarkId: result.insertedId
+            bookmarked: isBookmarked,
         });
     } catch (error) {
         console.error('Error during adding bookmark:', error);
         res.status(500).json({ message: 'Server error' });
     }
 });
+
 
 router.post('/waitlist', async (req, res) => {
     try {
