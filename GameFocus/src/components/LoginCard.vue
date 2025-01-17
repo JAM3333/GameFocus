@@ -44,7 +44,7 @@
                      placeholder="password"
                      required
                   ></v-text-field>
-                  <v-btn type="submit" class="mt-4" color="primary" value="log in" width="20vw">Login</v-btn>
+                  <v-btn type="submit" class="mt-4" color="primary" :loading="isLoading" :disabled="isLoading" value="log in" width="20vw">Login</v-btn>
                </form>
 
                <!-- SIGNUP -->
@@ -75,10 +75,23 @@
                      placeholder="password"
                      required
                   ></v-text-field>
-                  <v-btn type="submit" class="mt-4" color="primary" value="log in" width="20vw" >Sign Up</v-btn>
+                  <v-btn type="submit" class="mt-4"  :loading="isLoading" :disabled="isLoading" color="primary" value="log in" width="20vw" >Sign Up</v-btn>
                </form>
             </v-card>
-
+      <v-dialog v-model="dialog" max-width="400px">
+        <v-card>
+          <v-card-title class="text-h6">
+            Registration Successful
+          </v-card-title>
+          <v-card-text>
+            Your registration was successful! Please verify your email to complete the process.
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" text @click="dialog = false">OK</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-main>
 </v-app>
 
@@ -113,11 +126,13 @@ import { generateCodeFrame } from "vue/compiler-sfc";
        username: "",
        password: "",
        email: "",
+       isLoading: false,
        currentPageIsLogin: true,
        currentPageIsSignup: false,
        currentLoginMethodUsername: true,
        toggle_one: 0,
        generalError: '',
+       dialog: false,
        formLogin: {
          username: "",
          password: "",
@@ -132,22 +147,24 @@ import { generateCodeFrame } from "vue/compiler-sfc";
    methods: {
 
       async login() {
-         // LOGIN WITH USERNAME
             const loginData = {
               username: this.formLogin.username,
               email: this.formLogin.email,
               password: this.formLogin.password
             };
+            this.isLoading = true;
             await axios.post("http://" + import.meta.env.VITE_SERVER_IP + ":" + import.meta.env.VITE_SERVER_PORT + "/auth/login", loginData)
             .then((response) => {
                console.log("answer from server:", response.data);
                let token = response.data.token;
                console.log(token);
                localStorage.setItem('token', token);
-               this.$router.push({ path: '/' });
+               this.isLoading = false;
+              window.location.reload()
             })
             .catch((error) => {
               this.generalError = error.response.data.message;
+              this.isLoading = false;
               console.error("Error with the Login request:", error);
             });
       },
@@ -157,19 +174,20 @@ import { generateCodeFrame } from "vue/compiler-sfc";
             username: this.formSignup.username,
             password: this.formSignup.password
          };
-
-
-         await axios.post("http://" + import.meta.env.VITE_SERVER_IP + ":" + import.meta.env.VITE_SERVER_PORT + "/auth/register", signupData)
+        this.isLoading = true;
+        await axios.post("http://" + import.meta.env.VITE_SERVER_IP + ":" + import.meta.env.VITE_SERVER_PORT + "/auth/register", signupData)
          .then((response) => {
             console.log("answer from server:", response.data);
-            if (response.status === 201) {
-            alert("Signup successful! Please check your email to verify your account.");
+           this.isLoading = false;
+           if (response.status === 201) {
+             this.dialog = true;
             this.pageToLogin();
             }
          })
          .catch((error) => {
             console.error("Error with the POST request:", error);
-            this.generalError = error.response.data.message;
+           this.isLoading = false;
+           this.generalError = error.response.data.message;
          });
       },
       pageToSignup() {

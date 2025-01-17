@@ -1,6 +1,13 @@
 <template>
   <div class="search-page">
     <h1>Welcome to GameFocus {{ username }}</h1>
+    <a
+      target="_blank"
+      rel="noopener noreferrer"
+      class="buy-btn"
+    >
+      Buy Now
+    </a>
     <v-container>
     </v-container>
     <v-container>
@@ -14,6 +21,7 @@
 <script>
 import GameCard from "@/components/GameCard.vue";
 import axios from "axios";
+import {GetPrices} from "@/javascript/GameFunctions";
 
 export default {
   components: { GameCard },
@@ -22,6 +30,25 @@ export default {
       username: "",
       bookmarks: [],
     };
+  },
+  beforeMount() {
+    if (localStorage.token != null) {
+      this.fetchBookmarks()
+    }
+  },
+  methods: {
+    async fetchBookmarks(query) {
+      await axios.get("http://" + import.meta.env.VITE_SERVER_IP + ":" + import.meta.env.VITE_SERVER_PORT + "/bookmark/userbookmarks/" + localStorage.token)
+        .then((response) => {
+          console.log("answer from server:", response.data);
+          this.bookmarks = response.data.bookmarks;
+        })
+        .catch((error) => {
+          this.generalError = error.response.data.message;
+          console.error("Error with getting bookmarks:", error);
+        });
+    },
+
   },
 };
 </script>
