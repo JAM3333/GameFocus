@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid style="background-color: #181818; width:100%; height:auto; padding:50px; overflow: hidden;">
+  <v-container fluid style="background-color: #181818; min-width:100%; height:auto; padding:50px; overflow: hidden;">
     <v-row justify="center" align="center" class="image-slider">
       <v-col cols="12" md="8" class="slider-wrapper">
         <div
@@ -78,8 +78,8 @@ export default {
               title: game.title,
               description: `Available on: ${game.platform}, DRM: ${game.drm}`,
               discount: `-${game.discount}%`,
-              originalPrice: `$${game.regularPrice}`,
-              reducedPrice: `$${game.dealPrice}`,
+              originalPrice: `€${game.regularPrice}`,
+              reducedPrice: `€${game.dealPrice}`,
               storeLink: game.url,
             };
           })
