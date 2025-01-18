@@ -1,211 +1,253 @@
 <template>
+  <v-app>
+    <v-main>
+      <v-container class="d-flex justify-center align-center" id="Background">
+        <v-row class="login-card">
+          <!-- Left Panel: Conditional Text -->
+          <v-col class="left-panel" cols="6">
+            <h1>{{ currentPageIsSignup ? 'WELCOME!' : 'WELCOME BACK!' }}</h1>
+            <p>{{ currentPageIsSignup ? 'Create an account to get personalized experience.' : 'Hello again! Log in to access your personalized experience.' }}</p>
+            <p>
+              <span v-if="!currentPageIsSignup">
+                Don't have an account yet?
+                <span @click="switchToSignup" class="toggle-link">Signup</span>
+              </span>
+              <span v-if="currentPageIsSignup">
+                Already have an account?
+                <span @click="switchToLogin" class="toggle-link">Login</span>
+              </span>
+            </p>
+          </v-col>
 
-<v-app>
-   <div class="d-flex ga-8 mt-20 flex-column" id="Background">
-      <v-btn :to="{path: '/'}" density="comfortable" icon="mdi-arrow-left-bold-outline" size="x-large" style="margin: 10px 10px;"></v-btn>
-   </div>
-    <v-main id="Background" class="d-flex align-center justify-center ga-8 mt-20 flex-column">
- <v-alert id="error" v-if="generalError" type="error">{{ generalError }}</v-alert>
-            <v-card width="34vw" color="secondary" height="400px" class="d-flex align-center flex-column mr-16" elevation="12">
-                <v-btn-toggle v-model="toggle_one" mandatory width="34vw">
-                    <v-btn @click="pageToLogin()" width="17vw">Login</v-btn>
-                    <v-btn @click="pageToSignup()" width="17vw">Sign Up</v-btn>
-                </v-btn-toggle>
+          <!-- Right Panel: Login/Signup -->
+          <v-col class="right-panel" cols="6">
+            <v-card class="form-container" elevation="10">
+              <!-- Dynamic Title for Signup/Login -->
+              <h2 class="text-center mb-4">{{ currentPageIsSignup ? 'Sign Up' : 'Login' }}</h2>
 
-                <!-- LOGIN -->
-                <form v-if="currentPageIsLogin" ref="form" @submit.prevent="login()" style="margin-top: 60px">
-                  <v-text-field
-                  v-if="currentLoginMethodUsername"
-                     v-model="formLogin.username"
-                     name="username"
-                     label="Username"
-                     type="text"
-                     placeholder="username"
-                  hide-details="true"
-                    required
-                  ></v-text-field>
-                  <v-text-field
-                  v-if="!currentLoginMethodUsername"
-                     v-model="formLogin.email"
-                     name="email"
-                     label="Email"
-                     type="email"
-                     placeholder="username"
-                  hide-details="true"
-                     required
-                  ></v-text-field>
-                  <p @click="toggleEmailLogin()" class="mb-4" v-if="currentLoginMethodUsername">login with email instead</p>
-                  <p @click="toggleEmailLogin()" class="mb-4" v-if="!currentLoginMethodUsername">login with username instead</p>
-                  <v-text-field
-                     v-model="formLogin.password"
-                     name="password"
-                     label="Password"
-                     type="password"
-                     placeholder="password"
-                     required
-                  ></v-text-field>
-                  <v-btn type="submit" class="mt-4" color="primary" :loading="isLoading" :disabled="isLoading" value="log in" width="20vw">Login</v-btn>
-               </form>
+              <!-- Signup Form -->
+              <form v-if="currentPageIsSignup" @submit.prevent="signup">
+                <v-text-field class="field" v-model="formSignup.username" label="Username" required></v-text-field>
+                <v-text-field class="field" v-model="formSignup.email" label="Email" type="email" required></v-text-field>
+                <v-text-field class="field" v-model="formSignup.password" label="Password" type="password" required></v-text-field>
+                <v-btn color="primary" type="submit" class="mt-4" :loading="isLoading">Sign Up</v-btn>
+              </form>
 
-               <!-- SIGNUP -->
-               <form v-if="currentPageIsSignup" ref="form" @submit.prevent="signup()" style="margin-top: 35px;">
-                  <v-text-field
-                     v-model="formSignup.email"
-                     name="email"
-                     label="Email"
-                     type="email"
-                     placeholder="email"
-                     required
-                  ></v-text-field>
+              <!-- Login Form -->
+              <form v-else @submit.prevent="login">
+                <v-text-field class="field" v-model="formLogin.username" label="Username" required></v-text-field>
+                <v-text-field class="field" v-model="formLogin.password" label="Password" type="password" required></v-text-field>
+                <v-btn color="primary" type="submit" class="mt-4" :loading="isLoading">Login</v-btn>
+              </form>
 
-                  <v-text-field
-                     v-model="formSignup.username"
-                     name="username"
-                     label="Username"
-                     type="text"
-                     placeholder="username"
-                     required
-                  ></v-text-field>
-
-                  <v-text-field
-                     v-model="formSignup.password"
-                     name="password"
-                     label="Password"
-                     type="password"
-                     placeholder="password"
-                     required
-                  ></v-text-field>
-                  <v-btn type="submit" class="mt-4"  :loading="isLoading" :disabled="isLoading" color="primary" value="log in" width="20vw" >Sign Up</v-btn>
-               </form>
+              <!-- Switch between Login/Signup -->
+              <p class="text-center mt-2">
+                Switch to
+                <span @click="togglePage" class="toggle-link">
+                  {{ currentPageIsSignup ? 'Login' : 'Signup' }}
+                </span>
+              </p>
             </v-card>
-      <v-dialog v-model="dialog" max-width="400px">
-        <v-card>
-          <v-card-title class="text-h6">
-            Registration Successful
-          </v-card-title>
-          <v-card-text>
-            Your registration was successful! Please verify your email to complete the process.
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="primary" text @click="dialog = false">OK</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+          </v-col>
+        </v-row>
+      </v-container>
     </v-main>
-</v-app>
-
-
+  </v-app>
 </template>
 
-<style scoped>
-   p:hover {
-      color: #07B5FF;
-      cursor: pointer;
-   }
-   p {
-      margin-top: 0px;
-   }
+<script>
+import axios from "axios";
 
-   #Background {
-      background: url('../assets/bg_login_modified.jpg') no-repeat center center fixed !important;
-   }
-   #error {
-      position: absolute;
-      top: 1vh;
-   }
-</style>
- <script>
- import axios from "axios";
-import { onBeforeMount } from "vue";
-import { generateCodeFrame } from "vue/compiler-sfc";
- export default {
-   name: "Login",
-   data() {
-     return {
-       username: "",
-       password: "",
-       email: "",
-       isLoading: false,
-       currentPageIsLogin: true,
-       currentPageIsSignup: false,
-       currentLoginMethodUsername: true,
-       toggle_one: 0,
-       generalError: '',
-       dialog: false,
-       formLogin: {
-         username: "",
-         password: "",
-         email: "",
-       },
-       formSignup: {
+export default {
+  data() {
+    return {
+      currentPageIsSignup: false, // Start with Login
+      formSignup: { username: "", email: "", password: "" },
+      formLogin: { username: "", password: "" },
+      isLoading: false,
+      generalError: "",
+      dialog: false,
+    };
+  },
+  methods: {
+    togglePage() {
+      this.currentPageIsSignup = !this.currentPageIsSignup;
+      this.animateTransition();
+    },
 
-       }
+    switchToSignup() {
+      this.currentPageIsSignup = true;
+      this.animateTransition();
+    },
 
-     };
-   },
-   methods: {
+    switchToLogin() {
+      this.currentPageIsSignup = false;
+      this.animateTransition();
+    },
 
-      async login() {
-            const loginData = {
-              username: this.formLogin.username,
-              email: this.formLogin.email,
-              password: this.formLogin.password
-            };
-            this.isLoading = true;
-            await axios.post("http://" + import.meta.env.VITE_SERVER_IP + ":" + import.meta.env.VITE_SERVER_PORT + "/auth/login", loginData)
-            .then((response) => {
-               console.log("answer from server:", response.data);
-               let token = response.data.token;
-               console.log(token);
-               localStorage.setItem('token', token);
-               this.isLoading = false;
-              window.location.reload()
-            })
-            .catch((error) => {
-              this.generalError = error.response.data.message;
-              this.isLoading = false;
-              console.error("Error with the Login request:", error);
-            });
-      },
-      async signup() {
-         const signupData = {
-            email: this.formSignup.email,
-            username: this.formSignup.username,
-            password: this.formSignup.password
-         };
-        this.isLoading = true;
-        await axios.post("http://" + import.meta.env.VITE_SERVER_IP + ":" + import.meta.env.VITE_SERVER_PORT + "/auth/register", signupData)
-         .then((response) => {
-            console.log("answer from server:", response.data);
-           this.isLoading = false;
-           if (response.status === 201) {
-             this.dialog = true;
-            this.pageToLogin();
-            }
-         })
-         .catch((error) => {
-            console.error("Error with the POST request:", error);
-           this.isLoading = false;
-           this.generalError = error.response.data.message;
-         });
-      },
-      pageToSignup() {
-         this.currentPageIsLogin = false;
-         this.currentPageIsSignup = true;
-      },
-      pageBack(){
-         this.$router.push({ name: 'Home'});
-      },
-     pageToLogin() {
-       this.currentPageIsLogin = true;
-       this.currentPageIsSignup = false;
-     },
-     toggleEmailLogin() {
-          this.formLogin.username = "";
-          this.formLogin.email = "";
-         this.currentLoginMethodUsername = !this.currentLoginMethodUsername;
+    animateTransition() {
+      const container = this.$el.querySelector('.login-card');
+      container.classList.add('switching-animation');
+
+      setTimeout(() => {
+        container.classList.remove('switching-animation');
+      }, 500);
+
+      const leftPanelText = this.$el.querySelector('.left-panel h1');
+      const rightPanelText = this.$el.querySelector('.right-panel h2');
+
+      if (this.currentPageIsSignup) {
+        leftPanelText.classList.add('fade-out-text');
+        rightPanelText.classList.add('fade-in-text');
+      } else {
+        leftPanelText.classList.remove('fade-out-text');
+        rightPanelText.classList.remove('fade-in-text');
       }
-   },
- };
- </script>
+    },
+
+    async login() {
+      const loginData = {
+        username: this.formLogin.username,
+        password: this.formLogin.password,
+      };
+      this.isLoading = true;
+      try {
+        const response = await axios.post(
+          `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/auth/login`,
+          loginData
+        );
+        console.log("Login successful:", response.data);
+        localStorage.setItem("token", response.data.token);
+        this.isLoading = false;
+        window.location.reload();
+      } catch (error) {
+        console.error("Login error:", error);
+        this.generalError = error.response.data.message;
+        this.isLoading = false;
+      }
+    },
+
+    async signup() {
+      const signupData = {
+        username: this.formSignup.username,
+        email: this.formSignup.email,
+        password: this.formSignup.password,
+      };
+      this.isLoading = true;
+      try {
+        const response = await axios.post(
+          `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/auth/register`,
+          signupData
+        );
+        console.log("Signup successful:", response.data);
+        this.isLoading = false;
+        if (response.status === 201) {
+          this.dialog = true;
+          this.switchToLogin();
+        }
+      } catch (error) {
+        console.error("Signup error:", error);
+        this.generalError = error.response.data.message;
+        this.isLoading = false;
+      }
+    },
+  },
+};
+</script>
+
+<style scoped>
+#Background {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.login-card {
+  width: 70%;
+  height: 80%;
+  display: flex;
+  overflow: hidden;
+  border-radius: 16px;
+  position: relative;
+  transition: transform 0.5s ease-in-out;
+}
+
+.left-panel {
+  background-color: black;
+  color: white;
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  transition: transform 1s ease;
+}
+
+.left-panel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform: skewY(-15deg);
+  transform-origin: top left;
+  z-index: -1;
+}
+
+.right-panel {
+  background-color: #bbbaba;
+  padding: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  transition: transform 1s ease;
+}
+
+.field {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.mt-4 {
+  margin: 0.5rem;
+  display: block;
+  width: 97%;
+  border-radius: 0.5rem;
+}
+
+.form-container {
+  width: 100%;
+  border-radius: 16px;
+}
+
+.toggle-link {
+  color: #07b5ff;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.toggle-link:hover {
+  color: #005a99;
+}
+
+.switching-animation .left-panel {
+  transform: translateX(-100%) rotate(260deg);
+}
+
+.switching-animation .right-panel {
+  transform: translateX(100%) rotate(-260deg);
+}
+
+.fade-out-text {
+  animation: fadeOut 0.5s ease-out;
+}
+
+.fade-in-text {
+  animation: fadeIn 0.5s ease-in;
+}
+</style>
