@@ -27,7 +27,7 @@ export async function FetchDeals(limit,shop) {
   try {
 
     let url = `https://api.isthereanydeal.com/deals/v2?key=${import.meta.env.VITE_API_KEY}&limit=${limit}`
-    if(shop != undefined) {
+    if(shop !== undefined) {
       url = `https://api.isthereanydeal.com/deals/v2?key=${import.meta.env.VITE_API_KEY}&limit=${limit}&shops=${shop}`
     }
 
