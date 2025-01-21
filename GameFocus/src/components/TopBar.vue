@@ -46,13 +46,47 @@
     ></v-text-field>
 
     <!-- User Profile Section -->
-    <v-btn icon @click="goToProfile">
-      <v-icon class="mdi mdi-account-outline"></v-icon>
-    </v-btn>
+    <v-menu class="users-list" v-model="userVisible" offset-y>
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn
+          text
+          v-bind="attrs"
+          v-on="on"
+          @mouseenter="userVisible = true"
+          @click="goToProfile"
+        >
+          <v-icon right class="profile-icon"
+          >{{ userIcon }}</v-icon>
+        </v-btn>
+      </template>
+      <v-list v-if="loggedIn" @mouseleave="userVisible = false">
+        <v-list-item
+          @click="goToProfile"
+        >
+          <div style="display: flex; align-items: center; justify-content: center; flex-direction: row;">
+          <v-icon class="mr-2">mdi-book</v-icon>
+          <v-list-item-title>Bookmarks</v-list-item-title>
+          </div>
+        </v-list-item>
+
+        <v-list-item
+          @click="logout()"
+          class="d-flex align-center"
+        >
+          <div style="display: flex; align-items: center; justify-content: center; flex-direction: row;">
+          <v-icon class="mr-2">mdi-logout</v-icon>
+          <v-list-item-title>Logout</v-list-item-title>
+          </div>
+        </v-list-item>
+      </v-list>
+    </v-menu>
+
   </v-app-bar>
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   data() {
     return {
@@ -64,6 +98,9 @@ export default {
         { name: "Game Planet", url: "27" },
       ],
       menuVisible: false,
+      userVisible: false,
+      userIcon: "mdi-login",
+      loggedIn: false,
     };
   },
   methods: {
@@ -82,6 +119,22 @@ export default {
         query: {q: this.searchQuery},
       });
     },
+    async logout(){
+      const response = await axios.post(
+        `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/auth/logout`,
+        localStorage.getItem("token")
+      );
+      if (response.status === 200) {
+        localStorage.removeItem("token");
+        window.location.reload();
+      }
+    },
+    fetchUser(){
+      if(localStorage.getItem("token") !== null) {
+        this.loggedIn = true;
+        this.userIcon = "mdi mdi-account";
+      }
+    },
     performSearch() {
       if (this.searchQuery.trim()) {
         this.$router.push({
@@ -91,6 +144,9 @@ export default {
         this.searchQuery = "";
       }
     },
+  },
+  mounted() {
+    this.fetchUser();
   },
 };
 </script>
@@ -118,15 +174,24 @@ export default {
   margin-left: 13rem;
 }
 
+.users-list {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  max-width: 30rem;
+  margin-top: 4rem;
+  margin-right: -20rem;
+  margin-left: auto;
+}
+
+
 /* User Profile Icon Style */
 .profile-icon {
-  transition: transform 0.3s ease-in-out, color 0.3s ease-in-out;
-  color: #757474;
+  transition: transform 0.3s ease-in-out;
 }
 
 .profile-icon:hover {
-  transform: scale(1.2);
-  color: #ffffff; /* Highlight color on hover */
+  transform: scale(1.4);
 }
 
 /* Styling for Search Input */
