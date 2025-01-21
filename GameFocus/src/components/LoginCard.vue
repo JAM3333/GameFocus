@@ -1,109 +1,145 @@
-<template>
-  <v-app>
-    <v-main>
-      <v-container class="d-flex justify-center align-center" id="Background">
-        <v-row class="login-card">
-          <!-- Left Panel: Conditional Text -->
-          <v-col class="left-panel" cols="6">
-            <h1>{{ currentPageIsSignup ? 'WELCOME!' : 'WELCOME BACK!' }}</h1>
-            <p>{{ currentPageIsSignup ? 'Create an account to get personalized experience.' : 'Hello again! Log in to access your personalized experience.' }}</p>
-            <p>
-              <span v-if="!currentPageIsSignup">
-                Don't have an account yet?
-                <span @click="switchToSignup" class="toggle-link">Signup</span>
-              </span>
-              <span v-if="currentPageIsSignup">
-                Already have an account?
-                <span @click="switchToLogin" class="toggle-link">Login</span>
-              </span>
-            </p>
-          </v-col>
-
-          <!-- Right Panel: Login/Signup -->
-          <v-col class="right-panel" cols="6">
-            <v-card class="form-container" elevation="10">
-              <!-- Dynamic Title for Signup/Login -->
-              <h2 class="text-center mb-4">{{ currentPageIsSignup ? 'Sign Up' : 'Login' }}</h2>
-
-              <!-- Signup Form -->
-              <form v-if="currentPageIsSignup" @submit.prevent="signup">
-                <v-text-field class="field" v-model="formSignup.username" label="Username" required></v-text-field>
-                <v-text-field class="field" v-model="formSignup.email" label="Email" type="email" required></v-text-field>
-                <v-text-field class="field" v-model="formSignup.password" label="Password" type="password" required></v-text-field>
-                <v-btn color="primary" type="submit" class="mt-4" :loading="isLoading">Sign Up</v-btn>
-              </form>
-
-              <!-- Login Form -->
-              <form v-else @submit.prevent="login">
-                <v-text-field class="field" v-model="formLogin.username" label="Username" required></v-text-field>
-                <v-text-field class="field" v-model="formLogin.password" label="Password" type="password" required></v-text-field>
-                <v-btn color="primary" type="submit" class="mt-4" :loading="isLoading">Login</v-btn>
-              </form>
-
-              <!-- Switch between Login/Signup -->
-              <p class="text-center mt-2">
-                Switch to
+  <template>
+    <v-app>
+      <v-main>
+        <v-container class="d-flex justify-center align-center" id="Background">
+          <v-row class="login-card">
+            <!-- Left Panel: Conditional Text -->
+            <v-col class="left-panel" cols="6">
+              <h1>{{ currentPageText.title }}</h1>
+              <p>{{ currentPageText.description }}</p>
+              <p>
+                <span v-if="!currentPageIsSignup">
+                  {{ currentPageText.toggle }}
+                </span>
+                <span v-if="currentPageIsSignup">
+                  {{ currentPageText.toggle }}
+                </span>&nbsp
                 <span @click="togglePage" class="toggle-link">
                   {{ currentPageIsSignup ? 'Login' : 'Signup' }}
                 </span>
               </p>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-main>
-  </v-app>
-</template>
+            </v-col>
 
-<script>
-import axios from "axios";
+            <v-col class="right-panel" cols="6">
+              <v-card class="form-container" elevation="10">
+                <h2 class="text-center mb-4">{{ currentPageText.page }}</h2>
 
-export default {
-  data() {
-    return {
-      currentPageIsSignup: false, // Start with Login
-      formSignup: { username: "", email: "", password: "" },
-      formLogin: { username: "", password: "" },
-      isLoading: false,
-      generalError: "",
-      dialog: false,
-    };
-  },
-  methods: {
-    togglePage() {
-      this.currentPageIsSignup = !this.currentPageIsSignup;
-      this.animateTransition();
+                <!-- Signup Form -->
+                <form v-if="currentCardContent === 'signup'" @submit.prevent="signup">
+                  <v-text-field class="field" v-model="formSignup.username" label="Username" required></v-text-field>
+                  <v-text-field class="field" v-model="formSignup.email" label="Email" type="email" required></v-text-field>
+                  <v-text-field class="field" v-model="formSignup.password" label="Password" type="password" required></v-text-field>
+                  <v-btn color="primary" type="submit" class="mt-4" :loading="isLoading">Sign Up</v-btn>
+                </form>
+
+                <!-- Login Form -->
+                <form v-else @submit.prevent="login">
+                  <v-text-field class="field" v-model="formLogin.username" label="Username" required></v-text-field>
+                  <v-text-field class="field" v-model="formLogin.password" label="Password" type="password" required></v-text-field>
+                  <v-btn color="primary" type="submit" class="mt-4" :loading="isLoading">Login</v-btn>
+                </form>
+
+                <!-- Switch between Login/Signup -->
+                <p class="text-center mt-2">
+                  Switch to
+                  <span @click="togglePage" class="toggle-link">
+        {{ currentPageIsSignup ? 'Login' : 'Signup' }}
+      </span>
+                </p>
+              </v-card>
+            </v-col>
+
+          </v-row>
+        </v-container>
+      </v-main>
+    </v-app>
+  </template>
+
+  <script>
+  import axios from "axios";
+
+  export default {
+    data() {
+      return {
+        currentPageIsSignup: false, // Start with Login
+        formSignup: {username: "", email: "", password: ""},
+        formLogin: {username: "", password: ""},
+        isLoading: false,
+        generalError: "",
+        dialog: false,
+        currentPageText: {
+          title: 'WELCOME BACK!',
+          description: 'Hello again! Log in to access your personalized experience.',
+          toggle: "Don't have an account yet?",
+          page: "Login",
+        },
+        currentCardContent: 'login',
+      };
     },
+    methods: {
+      togglePage() {
+        this.currentPageIsSignup = !this.currentPageIsSignup;
+        this.animateTransition();
+        this.changeText();
+        this.changeCardContent();
+      },
 
-    switchToSignup() {
-      this.currentPageIsSignup = true;
-      this.animateTransition();
-    },
+      switchToSignup() {
+        this.currentPageIsSignup = true;
+        this.animateTransition();
+        this.changeText();
+        this.changeCardContent();
+      },
 
-    switchToLogin() {
-      this.currentPageIsSignup = false;
-      this.animateTransition();
-    },
+      switchToLogin() {
+        this.currentPageIsSignup = false;
+        this.animateTransition();
+        this.changeText();
+        this.changeCardContent();
+      },
 
-    animateTransition() {
-      const container = this.$el.querySelector('.login-card');
-      container.classList.add('switching-animation');
+      animateTransition() {
+        const container = this.$el.querySelector('.login-card');
 
+        // Entferne vorherige dauerhafte Klassen
+        container.classList.remove('show-signup', 'show-login');
+
+        // Wechsle die Ansicht basierend auf `currentPageIsSignup`
+        if (this.currentPageIsSignup) {
+          container.classList.add('show-signup'); // Klasse für Signup
+        } else {
+          container.classList.add('show-login'); // Klasse für Login
+        }
+      },
+
+      changeText() {
+        setTimeout(() => {
+          if (this.currentPageIsSignup) {
+            this.currentPageText = {
+              title: 'WELCOME!',
+              description: 'Create an account to get personalized experience',
+              toggle: "Already have an account?",
+              page: "Sign Up",
+            };
+          } else {
+            this.currentPageText = {
+              title: 'WELCOME BACK!',
+              description: 'Hello again! Log in to access your personalized experience.',
+              toggle: "Don't have an account yet?",
+              page: "Login",
+            };
+          }
+        }, 300);
+      },
+
+    changeCardContent() {
+      // Change the card content (signup/login form) after the panel is in place
       setTimeout(() => {
-        container.classList.remove('switching-animation');
-      }, 500);
-
-      const leftPanelText = this.$el.querySelector('.left-panel h1');
-      const rightPanelText = this.$el.querySelector('.right-panel h2');
-
-      if (this.currentPageIsSignup) {
-        leftPanelText.classList.add('fade-out-text');
-        rightPanelText.classList.add('fade-in-text');
-      } else {
-        leftPanelText.classList.remove('fade-out-text');
-        rightPanelText.classList.remove('fade-in-text');
-      }
+        // Dynamically change form depending on the `currentPageIsSignup` state
+        this.currentCardContent = this.currentPageIsSignup ? 'signup' : 'login';
+      }, 300); // Adjust this delay to ensure the card content updates after the transition
     },
+  },
 
     async login() {
       const loginData = {
@@ -151,103 +187,121 @@ export default {
         this.isLoading = false;
       }
     },
-  },
-};
-</script>
+  };
+  </script>
 
-<style scoped>
-#Background {
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-}
+  <style scoped>
+  #Background {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
 
-.login-card {
-  width: 70%;
-  height: 80%;
-  display: flex;
-  overflow: hidden;
-  border-radius: 16px;
-  position: relative;
-  transition: transform 0.5s ease-in-out;
-}
+  .login-card {
+    width: 70%;
+    height: 80%;
+    display: flex;
+    overflow: hidden;
+    border-radius: 16px;
+    position: relative;
+    transition: transform 0.5s ease;
+    margin-top: -5rem;
+  }
 
-.left-panel {
-  background-color: black;
-  color: white;
-  padding: 3rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  transition: transform 1s ease;
-}
+  .left-panel {
+    background-color: black;
+    color: white;
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    transition: transform 1s ease;
+  }
 
-.left-panel::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  transform: skewY(-15deg);
-  transform-origin: top left;
-  z-index: -1;
-}
+  .left-panel::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform: skewY(-15deg);
+    transform-origin: top left;
+    z-index: -1;
+  }
 
-.right-panel {
-  background-color: #bbbaba;
-  padding: 3rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  transition: transform 1s ease;
-}
+  .right-panel {
+    background-color: #232121;
+    padding: 3rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    transition: transform 1s ease;
+    z-index: -1;
+  }
 
-.field {
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
-}
+  .field {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
 
-.mt-4 {
-  margin: 0.5rem;
-  display: block;
-  width: 97%;
-  border-radius: 0.5rem;
-}
+  .mt-4 {
+    margin: 0.5rem;
+    display: block;
+    width: 97%;
+    border-radius: 0.5rem;
+  }
 
-.form-container {
-  width: 100%;
-  border-radius: 16px;
-}
+  .form-container {
+    width: 100%;
+    border-radius: 16px;
+  }
 
-.toggle-link {
-  color: #07b5ff;
-  cursor: pointer;
-  text-decoration: underline;
-}
+  .toggle-link {
+    color: #07b5ff;
+    cursor: pointer;
+    text-decoration: underline;
+  }
 
-.toggle-link:hover {
-  color: #005a99;
-}
+  .toggle-link:hover {
+    color: #005a99;
+  }
 
-.switching-animation .left-panel {
-  transform: translateX(-100%) rotate(260deg);
-}
+  .switching-animation .left-panel {
+    transform: translateX(100%);
+  }
 
-.switching-animation .right-panel {
-  transform: translateX(100%) rotate(-260deg);
-}
+  .switching-animation .right-panel {
+    transform: translateX(-100%);
+  }
 
-.fade-out-text {
-  animation: fadeOut 0.5s ease-out;
-}
+  /* Standardansicht: Login */
+  .login-card {
+    transform: translateX(0);
+    transition: transform 0.5s ease-in-out;
+  }
 
-.fade-in-text {
-  animation: fadeIn 0.5s ease-in;
-}
-</style>
+  /* Klasse, wenn Signup aktiv ist */
+  .show-signup .left-panel {
+    transform: translateX(100%);
+  }
+
+  .show-signup .right-panel {
+    transform: translateX(-100%);
+  }
+
+  /* Klasse, wenn Login aktiv ist */
+  .show-login .left-panel {
+    transform: translateX(0);
+  }
+
+  .show-login .right-panel {
+    transform: translateX(0);
+  }
+
+  </style>
