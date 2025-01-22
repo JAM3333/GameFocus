@@ -1,6 +1,7 @@
 <template>
   <v-app>
     <v-main>
+      <v-alert id="error" v-if="generalError" type="error">{{ generalError }}</v-alert>
       <v-container class="d-flex justify-center align-center" id="Background">
         <v-row class="login-card">
           <!-- Left Panel: Conditional Text -->
@@ -161,10 +162,9 @@ export default {
         this.isLoading = false;
         if (response.status === 201) {
           this.dialog = true;
-          this.switchToLogin();
+          this.togglePage();
         }
       } catch (error) {
-        console.error("Signup error:", error);
         this.generalError = error.response.data.message;
         this.isLoading = false;
       }

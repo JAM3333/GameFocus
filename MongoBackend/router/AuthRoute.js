@@ -72,8 +72,8 @@ router.post('/register', async (req, res) => {
         const db = getDB();
         const existingUser = await db.collection('users').findOne({ $or: [{ username }, { email }] });
         if (existingUser) {
-            await db.collection('users').deleteOne(
-                { $or: [{ username }, { email }] });
+            //await db.collection('users').deleteOne(
+            //    { $or: [{ username }, { email }] });
             return res.status(400).json({ message: 'Username or email already exists' });
         }
 
