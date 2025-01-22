@@ -1,6 +1,7 @@
   <template>
     <v-app>
       <v-main>
+        <v-alert id="error" v-if="generalError" type="error">{{ generalError }}</v-alert>
         <v-container class="d-flex justify-center align-center" id="Background">
           <v-row class="login-card">
             <!-- Left Panel: Conditional Text -->
