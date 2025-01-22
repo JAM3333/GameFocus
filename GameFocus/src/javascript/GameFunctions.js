@@ -9,7 +9,6 @@ export async function GetPrices(gameIds,games,tempgames) {
     );
 
     const prices = response.data;
-
     tempgames = tempgames.map(game => {
       const priceInfo = prices.find(item => item.id === game.gameId); // Finde das passende Objekt
       game.priceInfo = priceInfo || { historyLow: {}, deals: [], id: game.gameId } // Füge das ganze Objekt hinzu

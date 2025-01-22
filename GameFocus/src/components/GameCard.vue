@@ -13,7 +13,8 @@
       class="mb-image"
     ></v-img>
 
-    <v-card-title class="text-h6">{{ title }}</v-card-title>
+    <v-card-title v-if="title!==''" class="text-h6">{{ title }}</v-card-title>
+    <v-card-title v-else class="text-h6">{{ cardTitle }}</v-card-title>
 
     <v-card-subtitle>
       <div class="price-section">
@@ -64,7 +65,8 @@ export default {
   props: {
     title: {
       type: String,
-      required: true,
+      required: false,
+      default: "",
     },
     gameId: {
       type: String,
@@ -97,10 +99,12 @@ export default {
     return {
       image: "",
       bookmarked: false,
+      cardTitle: "",
       platforms: [],
       defaultImage: "https://www.freeiconspng.com/uploads/no-image-icon-11.PNG",
     };
   },
+  emits: ["update:title"],
   methods: {
     fetchGameInfo() {
       axios
@@ -112,7 +116,7 @@ export default {
 
           if (gameInfo && gameInfo.assets) {
             this.image = gameInfo.assets["banner400"] || this.defaultImage;
-
+            this.cardTitle = gameInfo.title;
             if (Array.isArray(gameInfo.drm)) {
               this.platforms = gameInfo.drm.map((drm) => this.getPlatformInfo(drm));
             } else {
@@ -152,14 +156,16 @@ export default {
       }
     },
     async isBookmarked() {
-      try {
-        const response = await axios.post(
-          `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/bookmark/isBookmarked`,
-          { game: this.gameId, token: localStorage.getItem("token") }
-        );
-        this.bookmarked = response?.data.bookmarked;
-      } catch (error) {
-        console.error("Error with the POST request:", error);
+        if(localStorage.getItem("token") !== null){
+          try {
+          const response = await axios.post(
+            `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/bookmark/isBookmarked`,
+            { game: this.gameId, token: localStorage.getItem("token") }
+          );
+          this.bookmarked = response?.data.bookmarked;
+        } catch (error) {
+          console.error("Error with the POST request:", error);
+        }
       }
     },
   },
