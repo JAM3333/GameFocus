@@ -224,6 +224,32 @@ export default {
   background-color: #c16868;
 }
 
+
+.game-card {
+  position: relative;
+  overflow: hidden; /* Ensures gradient stays within the card boundaries */
+}
+
+.game-card::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 100%; /* Covers the entire card */
+  height: 100%; /* Covers the entire card */
+  background: radial-gradient(
+    circle at bottom right,
+    rgba(14, 14, 14, 0.8),
+    rgba(0, 0, 0, 0) 70%
+  );
+  z-index: 0; /* Places it below the content */
+  pointer-events: none; /* Ensures it doesn’t interfere with interactions */
+}
+
+.game-card > * {
+  position: relative;
+  z-index: 1;
+}
 .bookmark-btn {
   position: absolute;
   top: 10px;
