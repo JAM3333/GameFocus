@@ -273,10 +273,6 @@ export default {
 </script>
 
 <style scoped>
-/* Add the same CSS styling from your previous code */
-</style>
-
-<style scoped>
 #Background {
   height: 100vh;
   display: flex;
