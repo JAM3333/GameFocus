@@ -1,7 +1,9 @@
 <template>
   <v-app>
     <v-main>
+      <!-- General Error Alert -->
       <v-alert id="error" v-if="generalError" type="error">{{ generalError }}</v-alert>
+
       <v-container class="d-flex justify-center align-center" id="Background">
         <v-row class="login-card">
           <!-- Left Panel: Conditional Text -->
@@ -14,9 +16,9 @@
               </span>
               <span v-if="currentPageIsSignup">
                 {{ currentPageText.toggle }}
-              </span>&nbsp
+              </span>&nbsp;
               <span @click="togglePage" class="toggle-link">
-                {{ currentPageIsSignup ? 'Login' : 'Signup' }}
+                {{ currentPageIsSignup ? "Login" : "Signup" }}
               </span>
             </p>
           </v-col>
@@ -27,24 +29,71 @@
 
               <!-- Signup Form -->
               <form v-if="currentCardContent === 'signup'">
-                <v-text-field class="field" v-model="formSignup.username" label="Username" required></v-text-field>
-                <v-text-field class="field" v-model="formSignup.email" label="Email" type="email" required></v-text-field>
-                <v-text-field class="field" v-model="formSignup.password" label="Password" type="password" required></v-text-field>
-                <v-btn color="primary" class="mt-4" :loading="isLoading" @click="signup">Sign Up</v-btn>
+                <v-text-field
+                  class="field"
+                  v-model="formSignup.username"
+                  label="Username"
+                  :error-messages="signupErrors.username"
+                  required
+                ></v-text-field>
+                <v-text-field
+                  class="field"
+                  v-model="formSignup.email"
+                  label="Email"
+                  type="email"
+                  :error-messages="signupErrors.email"
+                  required
+                ></v-text-field>
+                <v-text-field
+                  class="field"
+                  v-model="formSignup.password"
+                  label="Password"
+                  type="password"
+                  :error-messages="signupErrors.password"
+                  required
+                ></v-text-field>
+                <v-btn
+                  color="primary"
+                  class="mt-4"
+                  :loading="isLoading"
+                  @click="validateSignup"
+                >
+                  Sign Up
+                </v-btn>
               </form>
 
               <!-- Login Form -->
               <form v-else>
-                <v-text-field class="field" v-model="formLogin.username" label="Username" required></v-text-field>
-                <v-text-field class="field" v-model="formLogin.password" label="Password" type="password" required></v-text-field>
-                <v-btn color="primary" class="mt-4" :loading="isLoading" @click="login">Login</v-btn>
+                <v-text-field
+                  class="field"
+                  v-model="formLogin.username"
+                  label="Username"
+                  :error-messages="loginErrors.username"
+                  required
+                ></v-text-field>
+                <v-text-field
+                  class="field"
+                  v-model="formLogin.password"
+                  label="Password"
+                  type="password"
+                  :error-messages="loginErrors.password"
+                  required
+                ></v-text-field>
+                <v-btn
+                  color="primary"
+                  class="mt-4"
+                  :loading="isLoading"
+                  @click="validateLogin"
+                >
+                  Login
+                </v-btn>
               </form>
 
               <!-- Switch between Login/Signup -->
               <p class="text-center mt-2">
                 Switch to
                 <span @click="togglePage" class="toggle-link">
-                  {{ currentPageIsSignup ? 'Login' : 'Signup' }}
+                  {{ currentPageIsSignup ? "Login" : "Signup" }}
                 </span>
               </p>
             </v-card>
@@ -67,6 +116,8 @@ export default {
       isLoading: false,
       generalError: "",
       dialog: false,
+      signupErrors: { username: "", email: "", password: "" },
+      loginErrors: { username: "", password: "" },
       currentPageText: {
         title: "WELCOME BACK!",
         description: "Hello again! Log in to access your personalized experience.",
@@ -85,16 +136,14 @@ export default {
     },
 
     animateTransition() {
-      const container = this.$el.querySelector('.login-card');
+      const container = this.$el.querySelector(".login-card");
 
-      // Remove previous transition classes
-      container.classList.remove('show-signup', 'show-login');
+      container.classList.remove("show-signup", "show-login");
 
-      // Add the transition class based on the current page
       if (this.currentPageIsSignup) {
-        container.classList.add('show-signup'); // Class for Signup
+        container.classList.add("show-signup");
       } else {
-        container.classList.add('show-login'); // Class for Login
+        container.classList.add("show-login");
       }
     },
 
@@ -110,7 +159,8 @@ export default {
         } else {
           this.currentPageText = {
             title: "WELCOME BACK!",
-            description: "Hello again! Log in to access your personalized experience.",
+            description:
+              "Hello again! Log in to access your personalized experience.",
             toggle: "Don't have an account yet?",
             page: "Login",
           };
@@ -122,6 +172,50 @@ export default {
       setTimeout(() => {
         this.currentCardContent = this.currentPageIsSignup ? "signup" : "login";
       }, 300);
+    },
+
+    validateSignup() {
+      this.signupErrors = { username: "", email: "", password: "" };
+
+      if (!this.formSignup.username) {
+        this.signupErrors.username = "Username is required.";
+      }
+      if (!this.formSignup.email) {
+        this.signupErrors.email = "Email is required.";
+      } else if (!this.validateEmail(this.formSignup.email)) {
+        this.signupErrors.email = "Enter a valid email address.";
+      }
+      if (!this.formSignup.password) {
+        this.signupErrors.password = "Password is required.";
+      }
+
+      if (
+        !this.signupErrors.username &&
+        !this.signupErrors.email &&
+        !this.signupErrors.password
+      ) {
+        this.signup();
+      }
+    },
+
+    validateLogin() {
+      this.loginErrors = { username: "", password: "" };
+
+      if (!this.formLogin.username) {
+        this.loginErrors.username = "Username is required.";
+      }
+      if (!this.formLogin.password) {
+        this.loginErrors.password = "Password is required.";
+      }
+
+      if (!this.loginErrors.username && !this.loginErrors.password) {
+        this.login();
+      }
+    },
+
+    validateEmail(email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
     },
 
     async login() {
@@ -140,15 +234,11 @@ export default {
         this.isLoading = false;
         window.location.reload();
       } catch (error) {
-        console.error("Login error:", error);
         this.generalError = error.response.data.message;
-
-        // Auto-dismiss error after 3 seconds
+        this.isLoading = false;
         setTimeout(() => {
           this.generalError = "";
         }, 3000);
-
-        this.isLoading = false;
       }
     },
 
@@ -172,18 +262,19 @@ export default {
         }
       } catch (error) {
         this.generalError = error.response.data.message;
-
-        // Auto-dismiss error after 3 seconds
+        this.isLoading = false;
         setTimeout(() => {
           this.generalError = "";
         }, 3000);
-
-        this.isLoading = false;
       }
     },
   },
 };
 </script>
+
+<style scoped>
+/* Add the same CSS styling from your previous code */
+</style>
 
 <style scoped>
 #Background {
