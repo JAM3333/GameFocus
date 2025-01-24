@@ -100,6 +100,20 @@
           </v-col>
         </v-row>
       </v-container>
+      <v-dialog v-model="dialog" max-width="400px">
+        <v-card>
+          <v-card-title class="text-h6">
+            Registration Successful
+          </v-card-title>
+          <v-card-text>
+            Your registration was successful! Please verify your email to complete the process.
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" text @click="dialog = false">OK</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
     </v-main>
   </v-app>
 </template>

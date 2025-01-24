@@ -17,7 +17,7 @@
     <v-card-title v-else class="text-h6">{{ cardTitle }}</v-card-title>
 
     <v-card-subtitle>
-      <div class="price-section">
+      <div class="price-section d-flex justify-space-between">
         <span
           v-if="priceInfo?.deals?.length > 0 && priceInfo.deals[0]?.price?.amount !== 'no price found'"
           class="price"
@@ -27,21 +27,24 @@
         <span v-else class="price">
           {{ dealPrice + "€" || "Price not available" }}
         </span>
+        <span class="d-flex">
+        <div
+          v-for="(platformLogo, index) in platforms"
+          :key="index"
+          class="platform-item"
+        >
+          <v-img
+                :src="platformLogo"
+                class="platform-logo ml-2"
+                contain
+              ></v-img>
+            </div>
+        </span>
       </div>
     </v-card-subtitle>
 
     <v-card-actions class="platform-section">
-      <div
-        v-for="(platformLogo, index) in platforms"
-        :key="index"
-        class="platform-item"
-      >
-        <v-img
-          :src="platformLogo"
-          class="platform-logo"
-          contain
-        ></v-img>
-      </div>
+
     </v-card-actions>
 
     <v-btn
@@ -99,8 +102,7 @@ export default {
       image: "",
       bookmarked: false,
       cardTitle: "",
-      platforms: [],
-      platformLogo: {name: "",logo:"https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg"},
+      platforms: ["https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg"],
       defaultImage: "https://www.freeiconspng.com/uploads/no-image-icon-11.PNG",
     };
   },
@@ -120,7 +122,7 @@ export default {
             if (Array.isArray(gameInfo.drm)) {
               this.platforms = gameInfo.drm.map((drm) => this.getPlatformInfo(drm));
             } else {
-              this.platforms = [];  // Fallback if drm is not an array
+              this.platforms = ["https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg","https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg"];  // Fallback if drm is not an array
             }
           } else {
             console.error("No game info found in the response.");
