@@ -142,6 +142,12 @@ export default {
       } catch (error) {
         console.error("Login error:", error);
         this.generalError = error.response.data.message;
+
+        // Auto-dismiss error after 3 seconds
+        setTimeout(() => {
+          this.generalError = "";
+        }, 3000);
+
         this.isLoading = false;
       }
     },
@@ -166,6 +172,12 @@ export default {
         }
       } catch (error) {
         this.generalError = error.response.data.message;
+
+        // Auto-dismiss error after 3 seconds
+        setTimeout(() => {
+          this.generalError = "";
+        }, 3000);
+
         this.isLoading = false;
       }
     },

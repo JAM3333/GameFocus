@@ -72,8 +72,8 @@ router.post('/register', async (req, res) => {
         const db = getDB();
         const existingUser = await db.collection('users').findOne({ $or: [{ username }, { email }] });
         if (existingUser) {
-            //await db.collection('users').deleteOne(
-            //    { $or: [{ username }, { email }] });
+            await db.collection('users').deleteOne(
+                { $or: [{ username }, { email }] });
             return res.status(400).json({ message: 'Username or email already exists' });
         }
 
@@ -128,7 +128,7 @@ router.get('/verify/:token', async (req, res) => {
         );
 
         // Redirect to frontend with success message
-        res.redirect('http://localhost:3000/');
+        res.redirect('http://localhost:3000/user-page');
     } catch (error) {
         console.error('Error during email verification:', error);
         res.status(500).json({ message: 'Server error during verification' });

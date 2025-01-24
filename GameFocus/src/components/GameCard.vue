@@ -37,11 +37,10 @@
         class="platform-item"
       >
         <v-img
-          :src="platformLogo.logo"
+          :src="platformLogo"
           class="platform-logo"
           contain
         ></v-img>
-        <span class="platform-name">{{ platformLogo.name }}</span>
       </div>
     </v-card-actions>
 
@@ -101,6 +100,7 @@ export default {
       bookmarked: false,
       cardTitle: "",
       platforms: [],
+      platformLogo: {name: "",logo:"https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg"},
       defaultImage: "https://www.freeiconspng.com/uploads/no-image-icon-11.PNG",
     };
   },
