@@ -21,6 +21,7 @@
           :dealPrice="item.dealPrice"
           :url="item.url"
           :drm="item.drm"
+          :platforms="item.platforms"
         />
       </v-col>
     </v-row>
@@ -30,7 +31,7 @@
 <script>
 import axios from "axios";
 import GameCard from "../components/GameCard.vue";
-import { FetchDeals } from "../javascript/GameFunctions.js"; // Importiere die Funktion
+import {FetchDeals, GetPrices} from "../javascript/GameFunctions.js"; // Importiere die Funktion
 
 export default {
   components: {
@@ -43,6 +44,7 @@ export default {
       loading: false, // Loading state for sale items
       error: null,    // Error state for sale items
       storeName: "",  // Store name to display
+      gameIds: [], // Game IDs to fetch prices
     };
   },
   watch: {
@@ -64,6 +66,8 @@ export default {
         const deals = await FetchDeals(16, this.shopId);  // Fetch deals from the selected store
         if (Array.isArray(deals) && deals.length > 0) {
           this.saleItems = deals;
+          this.gameIds = this.saleItems.map(item => item.gameId); // Collect gameIds from sale items
+          await this.loadPricesForSaleItems();
         } else {
           this.saleItems = [];
           this.error = "Keine Angebote gefunden.";
@@ -74,6 +78,21 @@ export default {
       } finally {
         this.loading = false;
         console.log("Ladevorgang abgeschlossen.");
+      }
+    },
+
+    // Method to load prices for sale items
+    async loadPricesForSaleItems() {
+      try {
+        const prices = await GetPrices(this.gameIds, this.saleItems, this.saleItems);
+        // Update the sale items with price info
+        this.saleItems = prices.map((item) => {
+          const platforms = item.priceInfo.deals.map((deal) => deal.shop.name);
+          return { ...item, platforms };
+        });
+        console.log("Preise geladen:", this.saleItems);
+      } catch (error) {
+        console.error("Fehler beim Laden der Preise:", error);
       }
     },
 

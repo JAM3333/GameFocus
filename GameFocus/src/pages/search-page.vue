@@ -22,6 +22,7 @@
             :title="item.title"
             :gameId="item.gameId"
             :priceInfo="item.priceInfo"
+            :platforms="item.platforms"
           />
         </v-col>
       </v-row>
@@ -60,6 +61,10 @@ export default {
     },
     async fetchGames(query) {
       this.games = await FetchGames(query)
+      this.games = this.games.map((item) => {
+        const platforms = item.priceInfo.deals.map((deal) => deal.shop.name);
+        return { ...item, platforms };
+      });
     },
 
   },

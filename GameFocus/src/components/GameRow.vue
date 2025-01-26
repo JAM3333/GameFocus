@@ -16,6 +16,7 @@
           :title="item.title"
           :gameId="item.gameId"
           :dealPrice="item.dealPrice"
+          :platforms="item.platforms"
           :url="item.url"
           :drm="item.drm"
         />
@@ -57,7 +58,6 @@ export default {
         if (Array.isArray(deals) && deals.length > 0) {
           this.saleItems = deals;
           this.gameIds = this.saleItems.map(item => item.gameId); // Collect gameIds from sale items
-
           // Fetch prices for the sale items
           await this.loadPricesForSaleItems();
         } else {
@@ -77,9 +77,12 @@ export default {
     async loadPricesForSaleItems() {
       try {
         const prices = await GetPrices(this.gameIds, this.saleItems, this.saleItems);
-        console.log("Preise geladen:", prices);
         // Update the sale items with price info
-        this.saleItems = prices;
+        this.saleItems = prices.map((item) => {
+          const platforms = item.priceInfo.deals.map((deal) => deal.shop.name);
+          return { ...item, platforms };
+        });
+        console.log("Preise geladen:", this.saleItems);
       } catch (error) {
         console.error("Fehler beim Laden der Preise:", error);
       }

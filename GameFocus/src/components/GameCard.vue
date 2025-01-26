@@ -9,6 +9,7 @@
     ></v-img>
     <v-img
       :src="image"
+      cover
       aspect-ratio="16/9"
       class="mb-image"
     ></v-img>
@@ -28,11 +29,7 @@
           {{ dealPrice + "€" || "Price not available" }}
         </span>
         <span class="d-flex">
-        <div
-          v-for="(platformLogo, index) in platforms"
-          :key="index"
-          class="platform-item"
-        >
+        <div>
           <v-img
                 :src="platformLogo"
                 class="platform-logo ml-2"
@@ -44,7 +41,9 @@
     </v-card-subtitle>
 
     <v-card-actions class="platform-section">
-
+     <span class="platforms-list" title="platforms.join(' | ')">
+        {{ formattedPlatforms }}
+      </span>
     </v-card-actions>
 
     <v-btn
@@ -86,6 +85,10 @@ export default {
         deals: [{ price: { amount: "no price found"} }],
       }),
     },
+    platforms: {
+      type: Object,
+      required: false,
+     },
     url: {
       type: String,
       required: false,
@@ -102,7 +105,7 @@ export default {
       image: "",
       bookmarked: false,
       cardTitle: "",
-      platforms: ["https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg"],
+      platformLogo: "https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg",
       defaultImage: "https://www.freeiconspng.com/uploads/no-image-icon-11.PNG",
     };
   },
@@ -115,15 +118,11 @@ export default {
         )
         .then((response) => {
           const gameInfo = response?.data;  // Ensure response.data exists
-
+          console.log(this.drm)
           if (gameInfo && gameInfo.assets) {
             this.image = gameInfo.assets["banner400"] || this.defaultImage;
             this.cardTitle = gameInfo.title;
-            if (Array.isArray(gameInfo.drm)) {
-              this.platforms = gameInfo.drm.map((drm) => this.getPlatformInfo(drm));
-            } else {
-              this.platforms = ["https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg","https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg"];  // Fallback if drm is not an array
-            }
+            this.platformLogo = this.getPlatformInfo(this.platforms[0])
           } else {
             console.error("No game info found in the response.");
           }
@@ -133,18 +132,14 @@ export default {
         });
     },
     getPlatformInfo(platformName) {
+      console.log(platformName);
       const platformDetails = {
-        Steam: {
-          logo: "https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg",
-          name: "Steam",
-        },
-        Epic: {
-          logo: "https://upload.wikimedia.org/wikipedia/commons/6/63/Epic_Games_logo.svg",
-          name: "Epic Games",
-        },
-        // Add more platforms if needed
+        Steam: "https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg",
+        "Epic Game Store": "https://upload.wikimedia.org/wikipedia/commons/3/31/Epic_Games_logo.svg",
+        GOG: "https://upload.wikimedia.org/wikipedia/commons/2/2e/GOG.com_logo.svg",
+        GamePlanet: "https://img.wethrift.com/gamesplanet.jpg"
       };
-      return platformDetails[platformName] || { logo: "https://via.placeholder.com/24", name: "Unknown Platform" };
+      return platformDetails[platformName] || "https://cdn3.iconfinder.com/data/icons/retail-13/100/location-pin-512.png";
     },
     async changeBookmark() {
       try {
@@ -171,6 +166,14 @@ export default {
       }
     },
   },
+  computed: {
+    formattedPlatforms() {
+      if (Array.isArray(this.platforms)) {
+        return this.platforms.join(" | ");
+      }
+      return "";
+    },
+  },
   mounted() {
     this.fetchGameInfo();
     this.isBookmarked();
@@ -192,9 +195,20 @@ export default {
 .platform-section {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
 }
+.platforms-list {
+  border-top: solid 1px grey;
+  padding: 10px;
 
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%; /* Adjust as needed for your card's layout */
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #757575; /* Optional: Customize the color */
+}
 .platform-item {
   display: flex;
   align-items: center;
