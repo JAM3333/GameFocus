@@ -53,8 +53,7 @@
                   required
                 ></v-text-field>
                 <v-btn
-                  color="primary"
-                  class="mt-4"
+                  class="custom-button mt-4"
                   :loading="isLoading"
                   @click="validateSignup"
                 >
@@ -80,8 +79,7 @@
                   required
                 ></v-text-field>
                 <v-btn
-                  color="primary"
-                  class="mt-4"
+                  class="custom-button mt-4"
                   :loading="isLoading"
                   @click="validateLogin"
                 >
@@ -361,7 +359,6 @@ export default {
 .toggle-link {
   color: #07b5ff;
   cursor: pointer;
-  text-decoration: underline;
 }
 
 .toggle-link:hover {
@@ -399,4 +396,24 @@ export default {
 .show-login .right-panel {
   transform: translateX(0);
 }
+
+.custom-button {
+  border-radius: 15px;
+  color: #bab3b3;
+  cursor: pointer;
+  background-color: #005A89;
+  font-weight: 500;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.3s;
+}
+
+.custom-button:hover {
+  color: #ffffff;
+  background-color: #007bff; /* Optionaler Hover-Effekt */
+}
 </style>
+
