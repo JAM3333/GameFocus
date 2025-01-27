@@ -16,6 +16,7 @@
           :title="item.title"
           :gameId="item.gameId"
           :dealPrice="item.dealPrice"
+          :discount="item.discount"
           :platforms="item.platforms"
           :url="item.url"
           :drm="item.drm"

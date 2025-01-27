@@ -19,26 +19,42 @@
 
     <v-card-subtitle>
       <div class="price-section d-flex justify-space-between">
-        <span
-          v-if="priceInfo?.deals?.length > 0 && priceInfo.deals[0]?.price?.amount !== 'no price found'"
-          class="price"
-        >
-          {{ priceInfo.deals[0]?.price?.amount + "€" }}
+        <div class="price-container">
+      <span
+        v-if="priceInfo?.deals?.length > 0 && priceInfo.deals[0]?.price?.amount !== 'no price found'"
+        class="price"
+      >
+        {{ priceInfo.deals[0]?.price?.amount + "€" }}
+      </span>
+          <span v-else class="price">
+      {{ dealPrice + "€" || "Price not available" }}
+    </span>
+          <span
+            v-if="discount"
+            class="discount"
+          >
+        -{{ discount }}%
         </span>
-        <span v-else class="price">
-          {{ dealPrice + "€" || "Price not available" }}
+          <span
+            v-if="priceInfo?.deals?.length > 0 && priceInfo.deals[0]?.regular?.amount && priceInfo.deals[0]?.regular?.amount != priceInfo.deals[0]?.price?.amount"
+            class="discount"
+          >
+        -{{ 100-Math.round((100/priceInfo.deals[0]?.regular?.amount)*priceInfo.deals[0]?.price?.amount) }}%
         </span>
+        </div>
+
         <span class="d-flex">
-        <div>
-          <v-img
-                :src="platformLogo"
-                class="platform-logo ml-2"
-                contain
-              ></v-img>
-            </div>
-        </span>
+      <div>
+        <v-img
+          :src="platformLogo"
+          class="platform-logo ml-2"
+          contain
+        ></v-img>
+      </div>
+    </span>
       </div>
     </v-card-subtitle>
+
 
     <v-card-actions class="platform-section">
      <span class="platforms-list" title="platforms.join(' | ')">
@@ -72,6 +88,10 @@ export default {
     gameId: {
       type: String,
       required: true,
+    },
+    discount: {
+      type: Number,
+      required: false,
     },
     dealPrice: {
       type: String,
@@ -118,7 +138,7 @@ export default {
         )
         .then((response) => {
           const gameInfo = response?.data;  // Ensure response.data exists
-          console.log(this.drm)
+          console.log(this.priceInfo)
           if (gameInfo && gameInfo.assets) {
             this.image = gameInfo.assets["banner400"] || this.defaultImage;
             this.cardTitle = gameInfo.title;
@@ -238,6 +258,20 @@ export default {
   background-color: #c16868;
 }
 
+.price-container {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Adjust spacing between price and discount */
+}
+
+.discount {
+  background-color: #f44336; /* Red background for discount */
+  color: white;
+  font-size: 0.9rem;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
 
 .game-card {
   position: relative;

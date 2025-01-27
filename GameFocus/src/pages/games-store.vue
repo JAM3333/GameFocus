@@ -21,6 +21,7 @@
           :dealPrice="item.dealPrice"
           :url="item.url"
           :drm="item.drm"
+          :discount="item.discount"
           :platforms="item.platforms"
         />
       </v-col>
