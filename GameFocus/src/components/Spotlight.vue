@@ -133,6 +133,24 @@ export default {
   position: relative;
 }
 
+.image-wrapper::after {
+  content: "";
+  position: absolute;
+  overflow: hidden;
+  bottom: 0;
+  left: 0;
+  border-radius: 12px;
+  width: 100%; /* Covers the entire card */
+  height: 100%; /* Covers the entire card */
+  background: radial-gradient(
+    circle at bottom left,
+    rgb(24, 24, 24),
+    rgba(0, 0, 0, 0) 70%
+  );
+  z-index: 0; /* Places it below the content */
+  pointer-events: none; /* Ensures it doesn’t interfere with interactions */
+}
+
 .slider-wrapper {
   position: relative;
   overflow: hidden;

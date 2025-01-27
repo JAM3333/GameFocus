@@ -157,6 +157,7 @@ export default {
   background-color: #000000;
 }
 
+
 .v-btn {
   color: white;
 }

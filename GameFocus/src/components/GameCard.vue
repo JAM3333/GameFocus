@@ -53,7 +53,7 @@
       @click="changeBookmark"
     >
       <v-icon>
-        {{ bookmarked ? 'mdi-minus' : 'mdi-plus' }}
+        {{ bookmarked ? 'mdi-minus' : 'mdi-bookmark' }}
       </v-icon>
     </v-btn>
   </v-card>

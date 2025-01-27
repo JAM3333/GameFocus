@@ -20,6 +20,9 @@
           <GameCard
             :gameId="item.gameId"
             :priceInfo="item.priceInfo"
+            :platforms="item.platforms"
+            :url="item.url"
+            :drm="item.drm"
           />
         </v-col>
       </v-row>
@@ -70,7 +73,10 @@ export default {
         });
       const prices = await GetPrices(this.gameIds, this.bookmarks, this.bookmarks);
       console.log("Preise geladen:", prices);
-      this.bookmarks = prices;
+      this.bookmarks = prices.map((item) => {
+        const platforms = item.priceInfo.deals.map((deal) => deal.shop.name);
+        return { ...item, platforms };
+      });
     },
   },
 };
