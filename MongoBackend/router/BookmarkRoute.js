@@ -1,6 +1,7 @@
 const express = require('express');
 const Bookmark = require('../models/Bookmark');
 const { getDB } = require('../db/connectDB');
+const {sendVerificationEmail} = require("../utils/emailService");
 
 const router = express.Router();
 
@@ -143,9 +144,20 @@ router.post('/isbookmarked', async (req, res) => {
 
 router.post('/waitlist', async (req, res) => {
     try {
-        console.log(req.body)
+        const game = req.body[0];
+
+        const db = getDB();
+        const bookmarks = await db.collection('bookmarks').findOne({ game: game.id});
+        if (bookmarks.length === 0) {
+            for (const bookmark of bookmarks.users) {
+                await sendVerificationEmail(bookmark, user.verificationToken);
+
+            }
+        }
+
+        console.log(game.id,bookmarks)
         res.status(201).json({
-            message: 'New game added to list. User bookmark added.',
+            message: 'Notification successfully sent to users',
         });
     } catch (error) {
         console.error('Error during adding bookmark:', error);

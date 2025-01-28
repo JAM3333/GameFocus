@@ -33,8 +33,8 @@
 <script>
 import axios from "axios";
 import GameCard from "./GameCard.vue";
-import { FetchDeals } from "../javascript/GameFunctions.js"; // Import the function
-import { GetPrices } from "../javascript/GameFunctions.js"; // Import the function for prices
+import { FetchDeals } from "../javascript/GameFunctions.js";
+import { GetPrices } from "../javascript/GameFunctions.js";
 
 export default {
   components: {
@@ -42,40 +42,36 @@ export default {
   },
   data() {
     return {
-      saleItems: [], // Sale items state
-      loading: false, // Loading state for sale items
-      error: null, // Error state for sale items
-      gameIds: [], // Game IDs to fetch prices
-      currentPage: 1, // Current page for pagination
-      allGamesLoaded: false, // Track if all games have been loaded
+      saleItems: [],
+      loading: false,
+      error: null,
+      gameIds: [],
+      currentPage: 1,
+      allGamesLoaded: false,
     };
   },
   methods: {
     // Method to fetch sale items
     async loadSaleItems() {
-      if (this.loading || this.allGamesLoaded) return; // Prevent multiple requests if already loading or all games are loaded
+      if (this.loading || this.allGamesLoaded) return;
 
       console.log("Lade Angebote...");
       this.loading = true;
       this.error = null;
 
       try {
-        // Fetch sale items from API with pagination
-        const deals = await FetchDeals(16, this.currentPage); // Fetch 16 items per page
+        const deals = await FetchDeals(16, this.currentPage);
         console.log("Geladene Spiele von FetchDeals:", deals);
 
         if (Array.isArray(deals) && deals.length > 0) {
           // Append new deals to the existing sale items
           this.saleItems = [...this.saleItems, ...deals];
-          this.gameIds = this.saleItems.map((item) => item.gameId); // Collect gameIds from sale items
+          this.gameIds = this.saleItems.map((item) => item.gameId);
 
-          // Fetch prices for the newly fetched sale items
           await this.loadPricesForSaleItems();
 
-          // Increment the page number for the next fetch
           this.currentPage++;
         } else {
-          // Mark all games as loaded if no more deals are returned
           this.allGamesLoaded = true;
         }
       } catch (err) {
@@ -87,11 +83,9 @@ export default {
       }
     },
 
-    // Method to load prices for sale items
     async loadPricesForSaleItems() {
       try {
         const prices = await GetPrices(this.gameIds, this.saleItems, this.saleItems);
-        // Update the sale items with price info
         this.saleItems = prices.map((item) => {
           const platforms = item.priceInfo.deals.map((deal) => deal.shop.name);
           return {...item, platforms};
