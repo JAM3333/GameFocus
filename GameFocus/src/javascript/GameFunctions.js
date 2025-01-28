@@ -24,7 +24,7 @@ export async function GetPrices(gameIds,games,tempgames) {
 }
 export async function FetchDeals(limit, offset=0, shop) {
   try {
-    let url = `https://api.isthereanydeal.com/deals/v2?key=${import.meta.env.VITE_API_KEY}&limit=${limit}&offset=${offset}&sort=trending`;
+    let url = `https://api.isthereanydeal.com/deals/v2?key=${import.meta.env.VITE_API_KEY}&limit=${limit}&offset=${offset}&sort=trending&mature=false`;
 
     if (shop !== undefined) {
       url += `&shops=${shop}`;

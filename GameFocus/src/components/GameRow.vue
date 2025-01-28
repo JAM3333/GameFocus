@@ -60,7 +60,7 @@ export default {
       this.error = null;
 
       try {
-        const deals = await FetchDeals(16, this.currentPage);
+        const deals = await FetchDeals(16, (this.currentPage-1)*16);
         console.log("Geladene Spiele von FetchDeals:", deals);
 
         if (Array.isArray(deals) && deals.length > 0) {

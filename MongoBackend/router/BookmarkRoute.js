@@ -1,7 +1,7 @@
 const express = require('express');
 const Bookmark = require('../models/Bookmark');
 const { getDB } = require('../db/connectDB');
-const {sendVerificationEmail} = require("../utils/emailService");
+const {sendVerificationEmail, sendNotificationEmail} = require("../utils/emailService");
 
 const router = express.Router();
 
@@ -148,14 +148,13 @@ router.post('/waitlist', async (req, res) => {
 
         const db = getDB();
         const bookmarks = await db.collection('bookmarks').findOne({ game: game.id});
-        if (bookmarks.length === 0) {
-            for (const bookmark of bookmarks.users) {
-                await sendVerificationEmail(bookmark, user.verificationToken);
-
+        if (bookmarks.users.length > 0) {
+            for (const user of bookmarks.users) {
+                console.log(game)
+                await sendNotificationEmail(user, game);
             }
         }
 
-        console.log(game.id,bookmarks)
         res.status(201).json({
             message: 'Notification successfully sent to users',
         });
