@@ -101,6 +101,7 @@ export default {
       userVisible: false,
       userIcon: "mdi-login",
       loggedIn: false,
+      username: "",
     };
   },
   methods: {
@@ -116,7 +117,6 @@ export default {
     goToProfile() {
       this.$router.push({
         path: "/user-page",
-        query: {q: this.searchQuery},
       });
     },
     async logout(){
@@ -129,10 +129,19 @@ export default {
         window.location.reload();
       }
     },
-    fetchUser(){
+    async fetchUser(){
       if(localStorage.getItem("token") !== null) {
-        this.loggedIn = true;
-        this.userIcon = "mdi mdi-account";
+        await axios.get("http://" + import.meta.env.VITE_SERVER_IP + ":" + import.meta.env.VITE_SERVER_PORT + "/auth/user/" + localStorage.token)
+          .then((response) => {
+            console.log("answer from server:", response.data);
+            this.username = response.data.username;
+            this.loggedIn = true;
+            this.userIcon = "mdi mdi-account";
+          })
+          .catch((error) => {
+            this.generalError = error.response.data.message;
+            console.error("Error with the Login request:", error);
+          })
       }
     },
     performSearch() {

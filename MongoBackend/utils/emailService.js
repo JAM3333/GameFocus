@@ -67,6 +67,49 @@ const sendVerificationEmail = async (email, token) => {
     }
 };
 
+// Send bookmark notification email
+const sendNotificationEmail = async (email,game) => {
+    const verificationUrl = `http://localhost:3000`;
+
+
+    const ACCESS_TOKEN = await oAuth2Client.getAccessToken();
+    const transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true, // use SSL
+        auth: {
+            type: "OAuth2",
+            user: process.env.EMAIL_USER,
+            clientId: process.env.CLIENT_ID,
+            clientSecret: process.env.CLIENT_SECRET,
+            refreshToken: process.env.REFRESH_TOKEN,
+            accessToken: ACCESS_TOKEN,
+        },
+        tls: {
+            // do not fail on invalid certs
+            rejectUnauthorized: false
+        }
+    });
+
+
+    const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: 'Bookmarked game is on SALE',
+        html: `
+            <h1>The game "" on your bookmark-list is now on Sale</h1>
+            <a href="${verificationUrl}" style="display: inline-block; padding: 10px 20px; background-color: #4fd1c5; color: white; text-decoration: none; border-radius: 5px;">Visit the game on GameFocus</a>  `
+    };
+
+    try {
+        await transporter.sendMail(mailOptions);
+    } catch (error) {
+        console.error('Error sending verification email:', error);
+        throw error;
+    }
+};
+
 module.exports = {
-    sendVerificationEmail
+    sendVerificationEmail,
+    sendNotificationEmail,
 };

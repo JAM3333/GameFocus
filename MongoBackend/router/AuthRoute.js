@@ -165,6 +165,10 @@ router.get('/user/:token', async (req, res) => {
 });
 
 
+
+
+
+
 router.post('/logout', async (req, res) => {
     const token = req.token;
     tokenBlacklist.add(token);

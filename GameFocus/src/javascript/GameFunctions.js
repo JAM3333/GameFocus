@@ -22,17 +22,17 @@ export async function GetPrices(gameIds,games,tempgames) {
     return [];
   }
 }
-export async function FetchDeals(limit,shop) {
+export async function FetchDeals(limit, offset=0, shop) {
   try {
+    let url = `https://api.isthereanydeal.com/deals/v2?key=${import.meta.env.VITE_API_KEY}&limit=${limit}&offset=${offset}&sort=trending`;
 
-    let url = `https://api.isthereanydeal.com/deals/v2?key=${import.meta.env.VITE_API_KEY}&limit=${limit}&sort=trending`
-    if(shop !== undefined) {
-      url = `https://api.isthereanydeal.com/deals/v2?key=${import.meta.env.VITE_API_KEY}&limit=${limit}&shops=${shop}&sort=trending`
+    if (shop !== undefined) {
+      url += `&shops=${shop}`;
     }
 
     const response = await axios.get(url);
 
-    // Verarbeiten der Daten
+    // Process the data
     const items = response.data.list;
     const saleItems = items.map((item) => ({
       title: item.title,
@@ -46,7 +46,7 @@ export async function FetchDeals(limit,shop) {
       platform: item.deal.platforms.map((platform) => platform.name).join(", "),
     }));
 
-    //console.log("Verarbeitete Daten:", saleItems);
+    console.log("Verarbeitete Daten:", saleItems);
     return saleItems;
   } catch (error) {
     console.error("Failed to fetch sale items:", error);
@@ -70,7 +70,7 @@ export async function FetchGames(query) {
     let games = [];
     let gameIds = [];
 
-    const response = await fetch(`https://api.isthereanydeal.com/games/search/v1?key=${import.meta.env.VITE_API_KEY}&title=${query}`);
+    const response = await fetch(`https://api.isthereanydeal.com/games/search/v1?key=${import.meta.env.VITE_API_KEY}&title=${query}&results=64`);
     const data = await response.json();
 
 

@@ -1,3 +1,4 @@
 .env
 MongoBackend/combined.log
 MongoBackend/.env
+MongoBackend/combined.log

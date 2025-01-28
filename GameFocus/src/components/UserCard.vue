@@ -4,10 +4,11 @@
 
     <!-- Full-width banner image -->
     <!--<img src="@/assets/banner.png" alt="Banner" class="banner-image" />-->
-    <h1> Your Bookmarks</h1>
+    <p>Welcome back {{username}}</p>
+    <h1>Your Bookmarks</h1>
 
     <!-- Bookmarks grid -->
-    <v-container>
+    <v-container class="container">
       <v-row dense justify="center">
         <v-col
           v-for="(item, index) in bookmarks"
@@ -36,16 +37,23 @@ import axios from "axios";
 import {GetPrices} from "@/javascript/GameFunctions";
 
 export default {
+  props: {
+    username: {
+      type: String,
+      required: false,
+      default: "",
+    },
+  },
   components: { GameCard },
   data() {
     return {
-      username: "",
       bookmarks: [],
       gameIds: [],
     };
   },
   beforeMount() {
     if (localStorage.token != null) {
+      console.log(this.username);
       this.fetchBookmarks();
     }
   },
@@ -82,12 +90,44 @@ export default {
 };
 </script>
 
-<style>
+<style :scoped>
 .search-page {
   min-height: 100vh; /* Full-page height */
   padding: 2rem;
   color: white;
   text-align: center; /* Center all text */
+}
+
+.search-page::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  bottom: 0;
+  right: 0;
+  width: 100%; /* Covers the entire card */
+  height: 100%; /* Covers the entire card */
+  background: radial-gradient(
+    circle at bottom right,
+    rgba(41, 41, 41, 0.8),
+    rgba(0, 0, 0, 0) 70%
+  );
+  z-index: 0; /* Places it below the content */
+  pointer-events: none; /* Ensures it doesn’t interfere with interactions */
+}
+
+
+.container {
+  border-top: solid 1px grey;
+  padding: 10px;
+  z-index: 2;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%; /* Adjust as needed for your card's layout */
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #757575; /* Optional: Customize the color */
 }
 
 h1 {

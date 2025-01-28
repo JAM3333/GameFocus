@@ -64,7 +64,7 @@ export default {
       this.error = null;
 
       try {
-        const deals = await FetchDeals(16, this.shopId);  // Fetch deals from the selected store
+        const deals = await FetchDeals(32,undefined, this.shopId);  // Fetch deals from the selected store
         if (Array.isArray(deals) && deals.length > 0) {
           this.saleItems = deals;
           this.gameIds = this.saleItems.map(item => item.gameId); // Collect gameIds from sale items

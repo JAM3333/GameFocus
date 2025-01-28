@@ -15,7 +15,7 @@
         <v-col
           v-for="(item, index) in games"
           :key="index"
-          cols="4"
+          cols="5"
           md="3"
         >
           <GameCard

@@ -182,8 +182,15 @@ export default {
 
     changeCardContent() {
       setTimeout(() => {
-        this.currentCardContent = this.currentPageIsSignup ? "signup" : "login";
-      }, 300);
+        const alert = this.$el.querySelector("#error");
+        if (alert) {
+          alert.classList.add("hide");
+          setTimeout(() => {
+            this.generalError = "";
+          }, 500); // Wait for the slide-out animation to complete
+        }
+      }, 3000);
+
     },
 
     validateSignup() {
@@ -302,6 +309,24 @@ export default {
   position: relative;
   transition: transform 0.5s ease;
   margin-top: -5rem;
+  z-index: 1;
+}
+
+.v-main::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  bottom: 0;
+  right: 0;
+  width: 100%; /* Covers the entire card */
+  height: 100%; /* Covers the entire card */
+  background: radial-gradient(
+    circle at bottom right,
+    rgba(27, 27, 27, 0.8),
+    rgba(0, 0, 0, 0) 70%
+  );
+  z-index: 0; /* Places it below the content */
+  pointer-events: none; /* Ensures it doesn’t interfere with interactions */
 }
 
 .left-panel {
@@ -396,6 +421,37 @@ export default {
 .show-login .right-panel {
   transform: translateX(0);
 }
+@keyframes slide-in-left {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-out-right {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.v-alert {
+  position: absolute;
+  width: 100%;
+  animation: slide-in-left 0.5s ease forwards;
+}
+
+.v-alert.hide {
+  animation: slide-out-right 0.5s ease forwards;
+}
 
 .custom-button {
   border-radius: 15px;
@@ -411,6 +467,10 @@ export default {
   transition: all 0.3s;
 }
 
+.v-alert {
+  position: absolute;
+  width: 100%;
+}
 .custom-button:hover {
   color: #ffffff;
   background-color: #007bff; /* Optionaler Hover-Effekt */

@@ -1,6 +1,7 @@
 <template>
   <LoginCard v-if="!loggedIn"></LoginCard>
-  <UserCard v-else         :username="username"
+  <UserCard v-else
+            :username="username"
   ></UserCard>
 </template>
 
