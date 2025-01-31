@@ -8,8 +8,9 @@
       :class="{ 'hover-scale': hovering }"
     ></v-img>
 
-    <v-card-title v-if="title!==''" class="text-h6">{{ title }}</v-card-title>
-    <v-card-title v-else class="text-h6">{{ cardTitle }}</v-card-title>
+      <v-card-title class="text-h6" :title="title || cardTitle">
+        {{ title || cardTitle }}
+      </v-card-title>
 
     <v-card-subtitle>
       <div class="price-section d-flex justify-space-between">
@@ -199,6 +200,7 @@ export default {
   position: relative;
 }
 
+
 .mb-image {
   object-fit: cover;
   width: 100%;
@@ -226,7 +228,7 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  width: 100%; /* Adjust as needed for your card's layout */
+  width: 100%;
   font-size: 0.9rem;
   font-weight: bold;
   color: #757575; /* Optional: Customize the color */
