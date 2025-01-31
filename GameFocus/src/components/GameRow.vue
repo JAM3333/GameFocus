@@ -3,8 +3,8 @@
     <h2 class="my-4 text-center">On Sale</h2>
     <!-- Sale Items Loader and Error Handling -->
     <div v-if="error" class="text-center text-danger">{{ error }}</div>
-    <div v-else-if="loading && saleItems.length === 0" class="text-center mt-4">Lade Angebote...</div>
-    <div v-else-if="saleItems.length === 0" class="text-center mt-4">Keine Angebote verfügbar.</div>
+    <div v-else-if="loading && saleItems.length === 0" class="text-center mt-4">Loading deals...</div>
+    <div v-else-if="saleItems.length === 0" class="text-center mt-4">You reached the end</div>
 
     <v-row dense v-else>
       <v-col
@@ -26,7 +26,7 @@
     </v-row>
 
     <!-- Loader for infinite scroll -->
-    <div v-if="loading && saleItems.length > 0" class="text-center mt-4">Lade weitere Angebote...</div>
+    <div v-if="loading && saleItems.length > 0" class="text-center mt-4">Loading more deals...</div>
   </v-container>
 </template>
 
@@ -55,13 +55,12 @@ export default {
     async loadSaleItems() {
       if (this.loading || this.allGamesLoaded) return;
 
-      console.log("Lade Angebote...");
+      console.log("Loading deals...");
       this.loading = true;
       this.error = null;
 
       try {
         const deals = await FetchDeals(16, (this.currentPage-1)*16);
-        console.log("Geladene Spiele von FetchDeals:", deals);
 
         if (Array.isArray(deals) && deals.length > 0) {
           // Append new deals to the existing sale items
@@ -75,11 +74,10 @@ export default {
           this.allGamesLoaded = true;
         }
       } catch (err) {
-        this.error = "Fehler beim Laden der Angebote.";
-        console.error("Fehler in loadSaleItems:", err);
+        this.error = "Error while loading deals";
+        console.error("Error in loadSaleItems:", err);
       } finally {
         this.loading = false;
-        console.log("Ladevorgang abgeschlossen.");
       }
     },
 
@@ -90,9 +88,9 @@ export default {
           const platforms = item.priceInfo.deals.map((deal) => deal.shop.name);
           return {...item, platforms};
         });
-        console.log("Preise geladen:", this.saleItems);
+        console.log("Prices loaded:", this.saleItems);
       } catch (error) {
-        console.error("Fehler beim Laden der Preise:", error);
+        console.error("Error while loading prices:", error);
       }
     },
 

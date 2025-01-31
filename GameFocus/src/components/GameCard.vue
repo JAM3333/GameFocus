@@ -1,17 +1,11 @@
 <template>
-  <v-card outlined class="game-card">
+  <v-card outlined class="game-card" @mouseover="hovering = true" @mouseleave="hovering = false">
     <v-img
-      width="15vw"
-      height="25vh"
-      cover
-      v-if="image === ''"
-      :src="defaultImage"
-    ></v-img>
-    <v-img
-      :src="image"
+      :src="image || defaultImage"
       cover
       aspect-ratio="16/9"
       class="mb-image"
+      :class="{ 'hover-scale': hovering }"
     ></v-img>
 
     <v-card-title v-if="title!==''" class="text-h6">{{ title }}</v-card-title>
@@ -65,12 +59,10 @@
     <v-btn
       icon
       class="bookmark-btn"
-      :class="bookmarked ? 'bookmark-remove' : 'bookmark-add'"
+      :class="{ 'bookmark-remove': bookmarked, 'bookmark-add': !bookmarked, 'hover-scale': hovering || bookmarked }"
       @click="changeBookmark"
     >
-      <v-icon>
-        {{ bookmarked ? 'mdi-minus' : 'mdi-bookmark' }}
-      </v-icon>
+      <v-icon>{{ bookmarked ? 'mdi-minus' : 'mdi-bookmark' }}</v-icon>
     </v-btn>
   </v-card>
 </template>
@@ -125,6 +117,7 @@ export default {
       image: "",
       bookmarked: false,
       cardTitle: "",
+      hovering: false,
       platformLogo: "https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg",
       defaultImage: "https://www.freeiconspng.com/uploads/no-image-icon-11.PNG",
     };
@@ -207,9 +200,18 @@ export default {
 }
 
 .mb-image {
-  object-fit: contain;
+  object-fit: cover;
   width: 100%;
   height: 140px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.mb-image::v-deep(img) {
+  transition: transform 0.3s ease-in-out;
+}
+
+.mb-image.hover-scale::v-deep(img) {
+  transform: scale(1.1);
 }
 
 .platform-section {
@@ -300,7 +302,11 @@ export default {
 }
 .bookmark-btn {
   position: absolute;
-  top: 10px;
+  top: -100px;
   right: 10px;
+  transition: transform .2s ease-in-out;
+}
+.bookmark-btn.hover-scale {
+  transform: translateY(110px);
 }
 </style>
