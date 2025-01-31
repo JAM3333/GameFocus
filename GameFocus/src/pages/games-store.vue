@@ -5,8 +5,8 @@
 
     <!-- Sale Items Loader and Error Handling -->
     <div v-if="error" class="text-center text-danger">{{ error }}</div>
-    <div v-else-if="loading" class="text-center mt-4">Lade Angebote...</div>
-    <div v-else-if="saleItems.length === 0" class="text-center mt-4">Keine Angebote verfügbar.</div>
+    <div v-else-if="loading" class="text-center mt-4">Loading deals...</div>
+    <div v-else-if="saleItems.length === 0" class="text-center mt-4">No deals available</div>
 
     <v-row dense v-else>
       <v-col
