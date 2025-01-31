@@ -200,6 +200,9 @@ export default {
   position: relative;
 }
 
+.text-h6 {
+  text-align: left;
+}
 
 .mb-image {
   object-fit: cover;
