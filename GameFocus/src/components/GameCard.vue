@@ -223,7 +223,7 @@ export default {
 .platforms-list {
   border-top: solid 1px grey;
   padding: 10px;
-
+  text-align: left;
   display: block;
   white-space: nowrap;
   overflow: hidden;
