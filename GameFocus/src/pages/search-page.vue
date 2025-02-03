@@ -32,22 +32,21 @@
 
 <script>
 import GameCard from "@/components/GameCard.vue";
-import axios from "axios";
-import { FetchGames } from "../javascript/GameFunctions.js"; // Import the function
+import { FetchGames } from "../javascript/GameFunctions.js";
 
 export default {
-  components: {GameCard},
+  components: { GameCard },
   data() {
     return {
       searchQuery: this.$route.query.q || "",
       games: [],
-      gameIds: [],
     };
   },
   watch: {
     '$route.query.q': {
       immediate: true,
       handler(query) {
+        this.searchQuery = query || "";
         this.fetchGames(query);
       },
     },
@@ -55,18 +54,31 @@ export default {
   methods: {
     performSearch() {
       if (this.searchQuery.trim()) {
-        this.$router.push({path: '/search-page', query: {q: this.searchQuery}});
+        this.$router.push({
+          path: '/search-page',
+          query: { q: this.searchQuery }
+        }).then(() => {
+          window.location.reload();
+        });
         this.searchQuery = "";
       }
     },
     async fetchGames(query) {
-      this.games = await FetchGames(query)
-      this.games = this.games.map((item) => {
-        const platforms = item.priceInfo.deals.map((deal) => deal.shop.name);
-        return { ...item, platforms };
-      });
+      if (!query) {
+        this.games = [];
+        return;
+      }
+      try {
+        this.games = await FetchGames(query);
+        // Mapping der Plattformen aus den priceInfo.deals
+        this.games = this.games.map((item) => {
+          const platforms = item.priceInfo.deals.map((deal) => deal.shop.name);
+          return { ...item, platforms };
+        });
+      } catch (error) {
+        console.error("Error fetching games:", error);
+      }
     },
-
   },
 };
 </script>
@@ -91,7 +103,7 @@ v-card {
   color: white;
 }
 
-.searchonpage{
+.searchonpage {
   margin-top: -2rem;
 }
 </style>
