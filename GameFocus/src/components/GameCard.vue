@@ -52,7 +52,7 @@
 
 
     <v-card-actions class="platform-section">
-     <span class="platforms-list" title="platforms.join(' | ')">
+     <span class="platforms-list" :title=formattedPlatforms>
         {{ formattedPlatforms }}
       </span>
     </v-card-actions>
