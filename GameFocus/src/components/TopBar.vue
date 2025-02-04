@@ -55,27 +55,20 @@
           @mouseenter="userVisible = true"
           @click="goToProfile"
         >
-          <v-icon right class="profile-icon"
-          >{{ userIcon }}</v-icon>
+          <v-icon right class="profile-icon">{{ userIcon }}</v-icon>
         </v-btn>
       </template>
       <v-list v-if="loggedIn" @mouseleave="userVisible = false">
-        <v-list-item
-          @click="goToProfile"
-        >
+        <v-list-item @click="goToProfile">
           <div style="display: flex; align-items: center; justify-content: center; flex-direction: row;">
-          <v-icon class="mr-2">mdi-book</v-icon>
-          <v-list-item-title>Bookmarks</v-list-item-title>
+            <v-icon class="mr-2">mdi-book</v-icon>
+            <v-list-item-title>Bookmarks</v-list-item-title>
           </div>
         </v-list-item>
-
-        <v-list-item
-          @click="logout()"
-          class="d-flex align-center"
-        >
+        <v-list-item @click="logout()" class="d-flex align-center">
           <div style="display: flex; align-items: center; justify-content: center; flex-direction: row;">
-          <v-icon class="mr-2">mdi-logout</v-icon>
-          <v-list-item-title>Logout</v-list-item-title>
+            <v-icon class="mr-2">mdi-logout</v-icon>
+            <v-list-item-title>Logout</v-list-item-title>
           </div>
         </v-list-item>
       </v-list>
@@ -108,7 +101,7 @@ export default {
     handleGenreClick(genre) {
       console.log(`Selected store: ${genre.name}`);
       this.menuVisible = false;
-      // Navigate to the "GamesStore" page with the new shopId as a query parameter
+      // Navigation zur GamesStore-Seite mit shopId als Query-Parameter
       this.$router.push({
         path: '/games-store',
         query: { shopId: genre.url }
@@ -139,16 +132,17 @@ export default {
             this.userIcon = "mdi mdi-account";
           })
           .catch((error) => {
-            this.generalError = error.response.data.message;
             console.error("Error with the Login request:", error);
-          })
+          });
       }
     },
     performSearch() {
       if (this.searchQuery.trim()) {
         this.$router.push({
           path: "/search-page",
-          query: {q: this.searchQuery},
+          query: { q: this.searchQuery }
+        }).then(() => {
+          window.location.reload();
         });
         this.searchQuery = "";
       }
@@ -161,11 +155,10 @@ export default {
 </script>
 
 <style>
-/* Styling for v-app-bar */
+/* Styling für v-app-bar */
 .v-application .v-app-bar {
   background-color: #000000;
 }
-
 
 .v-btn {
   color: white;
@@ -194,7 +187,6 @@ export default {
   margin-left: auto;
 }
 
-
 /* User Profile Icon Style */
 .profile-icon {
   transition: transform 0.3s ease-in-out;
@@ -204,7 +196,7 @@ export default {
   transform: scale(1.4);
 }
 
-/* Styling for Search Input */
+/* Styling für Search Input */
 .v-text-field input {
   color: white;
 }
