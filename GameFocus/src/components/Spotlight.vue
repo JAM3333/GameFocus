@@ -1,7 +1,12 @@
 <template>
-  <v-container fluid style="background-color: #181818; min-width:100%; height:auto; padding:50px; overflow: hidden;">
-    <v-row justify="center" align="center" class="image-slider">
-      <v-col cols="12" md="8" class="slider-wrapper">
+  <v-container fluid style="background-color: #181818; padding:50px; overflow: hidden;">
+    <v-row
+      justify="center"
+      align="center"
+      style="max-width: 1200px; margin: 0 auto;"
+      class="image-slider"
+    >
+      <v-col class="slider-wrapper">
         <div
           class="image-wrapper"
           v-for="(item, index) in items"
@@ -9,6 +14,7 @@
           v-show="currentIndex === index"
           @mouseover="pauseCycle"
           @mouseleave="resumeCycle"
+          @click="openPopup(item)"
         >
         <div class="image-gradient"></div>
           <img :src="item.src" alt="slider image" class="slider-image" />
@@ -16,20 +22,21 @@
             class="description"
           >
             <h1>{{ item.title }}</h1>
-            <p class="extended-description">{{ item.description }}</p>
+            <p class="extended-description">Available on: {{ item.description }}</p>
             <p class="price">
               <span class="discount">{{ item.discount }}</span>
               <span class="original-price">{{ item.originalPrice }}</span>
               <span class="reduced-price">{{ item.reducedPrice }}</span>
             </p>
             <a
-              :href="item.storeLink"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="buy-btn"
-            >
-              Buy Now
-            </a>
+          target="_blank"
+          :href="item.storeLink"
+          @click.stop
+          class="buy-btn"
+          title="Redirect to Store Page"
+        >
+          Buy Now
+        </a>
           </div>
         </div>
         <div class="progress-bars">
@@ -48,49 +55,68 @@
         </div>
       </v-col>
     </v-row>
+    <GamePopup
+      v-if="popupVisible"
+      :game="selectedGame"
+      @close="popupVisible = false, resumeCycle()"
+    />
   </v-container>
 </template>
 
 <script>
-import { FetchDeals, FetchGameInfo } from "../javascript/GameFunctions.js";
+import { FetchDeals, FetchGameInfo, GetPrices } from "../javascript/GameFunctions.js";
+import GamePopup from "./GamePopup.vue";
 export default {
   data() {
     return {
-      items: [], // Spotlight items
+      items: [],
       currentIndex: 0,
       progress: 0,
       cycleInterval: null,
+      popupVisible: false,
       isHovering: false,
+      scrollY: 0,
     };
   },
   methods: {
     async loadSpotlightGames() {
-      try {
-        const allGames = await FetchDeals(5); // Fetch the list of spotlight games
-        console.log(allGames);
+  try {
+    const allGames = await FetchDeals(5);
 
-        const spotlightGames = await Promise.all(
-          allGames.map(async (game) => {
-            const gameInfo = await FetchGameInfo(game.gameId); // Fetch detailed game info
-            const imageSrc = gameInfo?.assets?.banner400 || `https://cdn.example.com/games/${game.gameId}.jpg`; // Fallback to default image
-            return {
-              src: imageSrc,
-              title: game.title,
-              description: `Available on: ${game.platform}, DRM: ${game.drm}`,
-              discount: `-${game.discount}%`,
-              originalPrice: `€${game.regularPrice}`,
-              reducedPrice: `€${game.dealPrice}`,
-              storeLink: game.url,
-            };
-          })
-        );
-        console.log(spotlightGames);
-        this.items = spotlightGames;
-      } catch (error) {
-        console.error("Failed to load spotlight games:", error);
-      }
-    }
-    ,
+    const spotlightGames = await Promise.all(
+      allGames.map(async (game) => {
+        const gameInfo = await FetchGameInfo(game.gameId);
+        const imageSrc = gameInfo?.assets?.banner400 || "https://www.freeiconspng.com/uploads/no-image-icon-11.PNG";
+        const gameId = gameInfo?.id || game.gameId;
+        const prices = await GetPrices([game.gameId], [game], [game]);
+
+        this.saleItems = prices.map((item) => {
+          const platforms = item.priceInfo.deals.map((deal) => deal.shop.name);
+          return { ...item, platforms };
+        });
+
+        let formattedPlatforms = "";
+        if (this.saleItems.length > 0 && Array.isArray(this.saleItems[0].platforms)) {
+          formattedPlatforms = this.saleItems[0].platforms.join(" | ");
+        }
+        return {
+          src: imageSrc,
+          title: game.title,
+          description: formattedPlatforms,
+          discount: `-${game.discount}%`,
+          originalPrice: `€${game.regularPrice}`,
+          reducedPrice: `€${game.dealPrice}`,
+          storeLink: game.url,
+          gameId: gameId,
+        }; 
+      })
+    );
+
+    this.items = spotlightGames;
+  } catch (error) {
+    console.error("Failed to load spotlight games:", error);
+  }
+},
     startCycle() {
       this.cycleInterval = setInterval(() => {
         if (this.progress < 100) {
@@ -106,7 +132,7 @@ export default {
     },
     resumeCycle() {
       this.isHovering = false;
-      this.startCycle();
+      this.popupVisible ? "" : this.startCycle(); 
     },
     nextItem() {
       this.progress = 0;
@@ -116,6 +142,12 @@ export default {
       this.progress = 0;
       this.currentIndex = index;
     },
+    openPopup(game) {
+      this.selectedGame = game;
+      this.popupVisible = true;
+    },
+  },
+  computed: {
   },
   mounted() {
     this.loadSpotlightGames();
@@ -124,6 +156,28 @@ export default {
   beforeDestroy() {
     clearInterval(this.cycleInterval);
   },
+  watch: {
+  popupVisible(newValue) {
+    if (newValue) {
+      this.scrollY = window.scrollY;
+
+      document.body.style.position = "fixed";
+      document.body.style.overflow = "hidden";
+      document.body.style.width = "100%";
+      document.body.style.top = `-${this.scrollY}px`;
+    } else {
+      document.body.style.position = "";
+      document.body.style.overflow = "";
+      document.body.style.width = "";
+      document.body.style.top = "";
+
+      window.scrollTo(0, this.scrollY);
+    }
+  }
+},
+  beforeDestroy() {
+    document.body.style.overflow = "";
+  }
 };
 
 </script>
@@ -131,6 +185,11 @@ export default {
 <style scoped>
 .image-slider {
   position: relative;
+}
+
+.slider-wrapper {
+  position: relative;
+  overflow: hidden;
 }
 
 .image-wrapper::after {
@@ -147,13 +206,8 @@ export default {
     rgb(24, 24, 24),
     rgba(0, 0, 0, 0) 70%
   );
-  z-index: 0; /* Places it below the content */
-  pointer-events: none; /* Ensures it doesn’t interfere with interactions */
-}
-
-.slider-wrapper {
-  position: relative;
-  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
 }
 
 .image-wrapper {
