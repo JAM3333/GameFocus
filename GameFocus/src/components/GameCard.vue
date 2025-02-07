@@ -1,5 +1,5 @@
 <template>
-  <v-card outlined class="game-card" @mouseover="hovering = true" @mouseleave="hovering = false">
+  <v-card outlined class="game-card" @mouseover="hovering = true" @mouseleave="hovering = false" @click="openPopup(title || cardTitle)" :ripple="false">
     <v-img
       :src="image || defaultImage"
       cover
@@ -61,15 +61,23 @@
       icon
       class="bookmark-btn"
       :class="{ 'bookmark-remove': bookmarked, 'bookmark-add': !bookmarked, 'hover-scale': hovering || bookmarked }"
-      @click="changeBookmark"
+      @click.stop="changeBookmark"
     >
       <v-icon>{{ bookmarked ? 'mdi-minus' : 'mdi-bookmark' }}</v-icon>
     </v-btn>
   </v-card>
+  <GamePopup
+  v-if="popupVisible"
+  :game="selectedGame"
+  @close="popupVisible = false"
+/>
+
 </template>
 
 <script>
 import axios from "axios";
+import GamePopup from "./GamePopup.vue";
+
 
 export default {
   props: {
@@ -114,15 +122,18 @@ export default {
     },
   },
   data() {
-    return {
-      image: "",
-      bookmarked: false,
-      cardTitle: "",
-      hovering: false,
-      platformLogo: "https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg",
-      defaultImage: "https://www.freeiconspng.com/uploads/no-image-icon-11.PNG",
-    };
-  },
+  return {
+    image: "",
+    bookmarked: false,
+    cardTitle: "",
+    hovering: false,
+    platformLogo: "https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg",
+    defaultImage: "https://www.freeiconspng.com/uploads/no-image-icon-11.PNG",
+    popupVisible: false,
+    selectedGame: {},
+    scrolly: 0,
+  };
+},
   emits: ["update:title"],
   methods: {
     fetchGameInfo() {
@@ -132,7 +143,6 @@ export default {
         )
         .then((response) => {
           const gameInfo = response?.data;  // Ensure response.data exists
-          console.log(this.priceInfo)
           if (gameInfo && gameInfo.assets) {
             this.image = gameInfo.assets["banner400"] || this.defaultImage;
             this.cardTitle = gameInfo.title;
@@ -146,7 +156,6 @@ export default {
         });
     },
     getPlatformInfo(platformName) {
-      console.log(platformName);
       const platformDetails = {
         Steam: "https://upload.wikimedia.org/wikipedia/commons/8/83/Steam_icon_logo.svg",
         "Epic Game Store": "https://upload.wikimedia.org/wikipedia/commons/3/31/Epic_Games_logo.svg",
@@ -179,6 +188,24 @@ export default {
         }
       }
     },
+
+
+
+    //popup logic
+    openPopup(game) {
+      const discount = this.discount || 100-Math.round((100/this.priceInfo.deals[0]?.regular?.amount)*this.priceInfo.deals[0]?.price?.amount) || 0;
+      const pricing = this.dealPrice === "Price not found" ? this.priceInfo.deals[0]?.price?.amount : this.dealPrice;
+      const originalPrice = this.priceInfo.deals[0]?.regular?.amount ||Math.round(pricing / (1 - discount / 100)) || 0;
+      this.selectedGame.src = this.image || this.defaultImage;
+      this.selectedGame.title = game;
+      this.selectedGame.description = this.platforms.join(" | ");
+      this.selectedGame.originalPrice = originalPrice + "€";
+      this.selectedGame.reducedPrice = pricing + "€";
+      this.selectedGame.gameId = this.gameId;
+      this.selectedGame.discount = "-"+  discount + "%";
+      this.selectedGame.storeLink = this.url;
+      this.popupVisible = true;
+    },
   },
   computed: {
     formattedPlatforms() {
@@ -188,6 +215,29 @@ export default {
       return "";
     },
   },
+  watch: {
+  popupVisible(newValue) {
+    if (newValue) {
+      // Store the current scroll position
+      this.scrollY = window.scrollY;
+
+      // Prevent scrolling while keeping the user at the same position
+      document.body.style.position = "fixed";
+      document.body.style.overflow = "hidden";
+      document.body.style.width = "100%";
+      document.body.style.top = `-${this.scrollY}px`; // Keeps the page in place
+    } else {
+      // Restore the original scroll position
+      document.body.style.position = "";
+      document.body.style.overflow = "";
+      document.body.style.width = "";
+      document.body.style.top = "";
+
+      // Scroll back to the saved position
+      window.scrollTo(0, this.scrollY);
+    }
+  }
+},
   mounted() {
     this.fetchGameInfo();
     this.isBookmarked();
