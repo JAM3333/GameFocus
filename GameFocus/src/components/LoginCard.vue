@@ -318,15 +318,15 @@ export default {
   z-index: -1;
   bottom: 0;
   right: 0;
-  width: 100%; /* Covers the entire card */
-  height: 100%; /* Covers the entire card */
+  width: 100%;
+  height: 100%;
   background: radial-gradient(
     circle at bottom right,
     rgba(27, 27, 27, 0.8),
     rgba(0, 0, 0, 0) 70%
   );
-  z-index: 0; /* Places it below the content */
-  pointer-events: none; /* Ensures it doesn’t interfere with interactions */
+  z-index: 0;
+  pointer-events: none;
 }
 
 .left-panel {
@@ -398,13 +398,11 @@ export default {
   transform: translateX(-100%);
 }
 
-/* Standard view: Login */
 .login-card {
   transform: translateX(0);
   transition: transform 0.5s ease-in-out;
 }
 
-/* Class when Signup is active */
 .show-signup .left-panel {
   transform: translateX(100%);
 }
@@ -413,7 +411,6 @@ export default {
   transform: translateX(-100%);
 }
 
-/* Class when Login is active */
 .show-login .left-panel {
   transform: translateX(0);
 }

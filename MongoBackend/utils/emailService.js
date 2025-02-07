@@ -98,8 +98,8 @@ const sendNotificationEmail = async (email,game) => {
         subject: `Bookmark: ${game.title} is now on sale!`,
         html: `
             <h1>The game "${game.title}" on your bookmark-list is now on Sale</h1>
-            <p>New Price: ${game.lastPrice.amount}</p>
-            <p>New Price: ${game.lastPrice.amount}</p>
+            <h2>New Price: ${game.deals[0]?.price.amount+" "+game.lastPrice?.currency} on ${game.deals[0]?.shop.name}</h2>
+            <p>Last Price: ${game.lastPrice?.amount+" "+game.lastPrice?.currency}</p>
             <a href="${bookmarkUrl}" style="display: inline-block; padding: 10px 20px; background-color: #4fd1c5; color: white; text-decoration: none; border-radius: 5px;">Visit the game on GameFocus</a>  `
     };
 
