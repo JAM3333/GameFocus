@@ -1,6 +1,6 @@
 <template>
-  <v-container 
-    :class="{ 'popup-container': true, 'active': showPopup, 'enter': entering }" 
+  <v-container
+    :class="{ 'popup-container': true, 'active': showPopup, 'enter': entering }"
     @click="closePopup"
   >
     <div class="popup-card no-padding" @click.stop>
@@ -21,7 +21,7 @@
         </a>
       </div>
       <div class="content-wrapper">
-        <h2 class="price-history">Price History:</h2>  
+        <h2 class="price-history">Price History:</h2>
         <canvas ref="priceChart"></canvas>
       </div>
     </div>
@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import Chart from "chart.js/auto";
+//import Chart from "chart.js/auto";
 import axios from "axios";
 
 export default {
