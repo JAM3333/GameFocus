@@ -35,6 +35,7 @@
                   label="Username"
                   :error-messages="signupErrors.username"
                   required
+                  @keyup.enter="validateSignup"
                 ></v-text-field>
                 <v-text-field
                   class="field"
@@ -43,15 +44,24 @@
                   type="email"
                   :error-messages="signupErrors.email"
                   required
+                  @keyup.enter="validateSignup"
                 ></v-text-field>
                 <v-text-field
                   class="field"
                   v-model="formSignup.password"
                   label="Password"
-                  type="password"
+                  :type="showPassword ? 'text' : 'password'"
                   :error-messages="signupErrors.password"
                   required
-                ></v-text-field>
+                  @keyup.enter="validateSignup"
+                >
+                  <template v-slot:append-inner>
+                    <v-icon @mousedown.prevent="showPassword = !showPassword">
+                      {{ showPassword ? 'mdi-eye-off-outline' : 'mdi-eye-outline' }}
+                    </v-icon>
+                  </template>
+                </v-text-field>
+
                 <v-btn
                   class="custom-button mt-4"
                   :loading="isLoading"
@@ -69,15 +79,25 @@
                   label="Username"
                   :error-messages="loginErrors.username"
                   required
+                  @keyup.enter="validateLogin"
                 ></v-text-field>
                 <v-text-field
                   class="field"
                   v-model="formLogin.password"
                   label="Password"
-                  type="password"
+                  :type="showPassword ? 'text' : 'password'"
                   :error-messages="loginErrors.password"
                   required
-                ></v-text-field>
+                  @keyup.enter="validateLogin"
+                >
+                  <template v-slot:append-inner>
+                    <v-icon @mousedown.prevent="showPassword = !showPassword">
+                      {{ showPassword ? 'mdi-eye-off-outline' : 'mdi-eye-outline' }}
+                    </v-icon>
+                  </template>
+                </v-text-field>
+
+
                 <v-btn
                   class="custom-button mt-4"
                   :loading="isLoading"
@@ -125,6 +145,7 @@ export default {
       currentPageIsSignup: false, // Start with Login
       formSignup: { username: "", email: "", password: "" },
       formLogin: { username: "", password: "" },
+      showPassword: false,
       isLoading: false,
       generalError: "",
       dialog: false,
@@ -182,15 +203,8 @@ export default {
 
     changeCardContent() {
       setTimeout(() => {
-        const alert = this.$el.querySelector("#error");
-        if (alert) {
-          alert.classList.add("hide");
-          setTimeout(() => {
-            this.generalError = "";
-          }, 500); // Wait for the slide-out animation to complete
-        }
-      }, 3000);
-
+        this.currentCardContent = this.currentPageIsSignup ? "signup" : "login";
+      }, 300);
     },
 
     validateSignup() {
@@ -298,6 +312,9 @@ export default {
   justify-content: center;
   align-items: center;
   padding: 20px;
+}
+#error{
+  z-index: 2;
 }
 
 .login-card {
@@ -455,9 +472,8 @@ export default {
 
 .custom-button {
   border-radius: 15px;
-  color: #bab3b3;
   cursor: pointer;
-  background-color: #005A89;
+  background-color: #007bff;
   font-weight: 500;
   overflow: hidden;
   display: flex;
@@ -472,8 +488,7 @@ export default {
   width: 100%;
 }
 .custom-button:hover {
-  color: #ffffff;
-  background-color: #007bff; /* Optionaler Hover-Effekt */
+  background-color: #005A89; /* Optionaler Hover-Effekt */
 }
 </style>
 
