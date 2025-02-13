@@ -176,15 +176,14 @@ export default {
       }
     },
     async isBookmarked() {
-        if(localStorage.getItem("token") !== null){
-          try {
+      if(localStorage.getItem("token") !== null){
+        try {
           const response = await axios.post(
             `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/bookmark/isBookmarked`,
             { game: this.gameId, token: localStorage.getItem("token") }
           );
           this.bookmarked = response?.data.bookmarked;
         } catch (error) {
-          console.error("Error with the POST request:", error);
         }
       }
     },
