@@ -165,15 +165,22 @@ export default {
       return platformDetails[platformName] || "https://cdn3.iconfinder.com/data/icons/retail-13/100/location-pin-512.png";
     },
     async changeBookmark() {
-      try {
-        const response = await axios.post(
-          `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/bookmark/changebookmark`,
-          { game: this.gameId, token: localStorage.getItem("token") }
-        );
-        this.bookmarked = !this.bookmarked;
-      } catch (error) {
-        console.error("Error with the POST request:", error);
+      if (localStorage.getItem("token") !== null){
+        try {
+          const response = await axios.post(
+            `http://${import.meta.env.VITE_SERVER_IP}:${import.meta.env.VITE_SERVER_PORT}/bookmark/changebookmark`,
+            { game: this.gameId, token: localStorage.getItem("token") }
+          );
+          this.bookmarked = !this.bookmarked;
+        } catch (error) {
+          console.error("Error with the POST request:", error);
+        }
+      } else {
+        this.$router.push({
+          path: "/user-page",
+        });
       }
+
     },
     async isBookmarked() {
       if(localStorage.getItem("token") !== null){
