@@ -13,7 +13,7 @@
         <p class="description">Available on: {{ game.description }}</p>
         <p class="price">
           <span class="discount" v-if="game.discount != '-0%'">{{ game.discount }}</span>
-          <span class="original-price">{{ game.originalPrice }}</span>
+          <span class="original-price"v-if="game.discount != '-0%'">{{ game.originalPrice }}</span>
           <span class="reduced-price">{{ game.reducedPrice }}</span>
         </p>
         <a target="_blank" :href="game.storeLink" class="buy-btn" title="Redirect to Store Page">
@@ -85,6 +85,11 @@ export default {
         },
         options: {
           responsive: true,
+          scales: {
+            x: {
+              reverse: true,
+            }
+          },
           plugins: {
             legend: { display: true },
             tooltip: {

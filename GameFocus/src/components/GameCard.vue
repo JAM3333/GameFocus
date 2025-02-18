@@ -77,6 +77,7 @@
 <script>
 import axios from "axios";
 import GamePopup from "./GamePopup.vue";
+import noShopImage from '@/assets/noShop.png';
 
 
 export default {
@@ -113,7 +114,6 @@ export default {
     url: {
       type: String,
       required: false,
-      default: "abc",
     },
     drm: {
       type: String,
@@ -162,7 +162,7 @@ export default {
         GOG: "https://upload.wikimedia.org/wikipedia/commons/2/2e/GOG.com_logo.svg",
         GamePlanet: "https://img.wethrift.com/gamesplanet.jpg"
       };
-      return platformDetails[platformName] || "https://img.freepik.com/premium-vector/local-icon-outline_1076610-39539.jpg?semt=ais_hybrid";
+      return platformDetails[platformName] || noShopImage;
     },
     async changeBookmark() {
       if (localStorage.getItem("token") !== null){

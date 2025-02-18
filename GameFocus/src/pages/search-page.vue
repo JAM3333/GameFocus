@@ -23,6 +23,7 @@
             :gameId="item.gameId"
             :priceInfo="item.priceInfo"
             :platforms="item.platforms"
+            :url="item.priceInfo?.deals?.[0]?.url || 'none'"
           />
         </v-col>
       </v-row>

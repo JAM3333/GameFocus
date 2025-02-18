@@ -46,7 +46,6 @@ export async function FetchDeals(limit, offset=0, shop) {
       platform: item.deal.platforms.map((platform) => platform.name).join(", "),
     }));
 
-    console.log("Verarbeitete Daten:", saleItems);
     return saleItems;
   } catch (error) {
     console.error("Failed to fetch sale items:", error);

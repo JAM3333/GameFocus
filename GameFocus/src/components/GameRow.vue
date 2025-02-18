@@ -88,7 +88,6 @@ export default {
           const platforms = item.priceInfo.deals.map((deal) => deal.shop.name);
           return {...item, platforms};
         });
-        console.log("Prices loaded:", this.saleItems);
       } catch (error) {
         console.error("Error while loading prices:", error);
       }
