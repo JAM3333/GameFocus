@@ -19,10 +19,10 @@
         v-if="priceInfo?.deals?.length > 0 && priceInfo.deals[0]?.price?.amount !== 'no price found'"
         class="price"
       >
-        {{ priceInfo.deals[0]?.price?.amount + "€" }}
-      </span>
+      {{ priceInfo.deals[0]?.price?.amount }}€
+    </span>
           <span v-else class="price">
-      {{ dealPrice + "€" || "Price not available" }}
+      {{ dealPrice || "Price not available" }}
     </span>
           <span
             v-if="discount"
@@ -162,7 +162,7 @@ export default {
         GOG: "https://upload.wikimedia.org/wikipedia/commons/2/2e/GOG.com_logo.svg",
         GamePlanet: "https://img.wethrift.com/gamesplanet.jpg"
       };
-      return platformDetails[platformName] || "https://cdn3.iconfinder.com/data/icons/retail-13/100/location-pin-512.png";
+      return platformDetails[platformName] || "https://img.freepik.com/premium-vector/local-icon-outline_1076610-39539.jpg?semt=ais_hybrid";
     },
     async changeBookmark() {
       if (localStorage.getItem("token") !== null){

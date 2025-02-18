@@ -70,6 +70,7 @@ export default {
       }
       try {
         this.games = await FetchGames(query);
+        console.log("Spiele abgerufen:", this.games);
         // Mapping der Plattformen aus den priceInfo.deals
         this.games = this.games.map((item) => {
           const platforms = item.priceInfo.deals.map((deal) => deal.shop.name);
