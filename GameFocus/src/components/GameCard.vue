@@ -113,7 +113,6 @@ export default {
     url: {
       type: String,
       required: false,
-      default: "abc",
     },
     drm: {
       type: String,
