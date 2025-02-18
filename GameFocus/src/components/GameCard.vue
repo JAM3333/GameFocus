@@ -77,6 +77,7 @@
 <script>
 import axios from "axios";
 import GamePopup from "./GamePopup.vue";
+import noShopImage from '@/assets/noShop.png';
 
 
 export default {
@@ -161,7 +162,7 @@ export default {
         GOG: "https://upload.wikimedia.org/wikipedia/commons/2/2e/GOG.com_logo.svg",
         GamePlanet: "https://img.wethrift.com/gamesplanet.jpg"
       };
-      return platformDetails[platformName] || "https://cdn3.iconfinder.com/data/icons/retail-13/100/location-pin-512.png";
+      return platformDetails[platformName] || noShopImage;
     },
     async changeBookmark() {
       if (localStorage.getItem("token") !== null){
