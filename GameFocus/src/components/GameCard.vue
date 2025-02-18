@@ -22,7 +22,7 @@
       {{ priceInfo.deals[0]?.price?.amount }}€
     </span>
           <span v-else class="price">
-      {{ dealPrice || "Price not available" }}
+      {{ dealPrice !== "Price not found" ? dealPrice + "€" : "Price not found" }}
     </span>
           <span
             v-if="discount"
