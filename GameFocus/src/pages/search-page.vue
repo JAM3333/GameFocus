@@ -23,7 +23,7 @@
             :gameId="item.gameId"
             :priceInfo="item.priceInfo"
             :platforms="item.platforms"
-            :url="item.priceInfo.deals[0].url"
+            :url="item.priceInfo?.deals?.[0]?.url || 'none'"
           />
         </v-col>
       </v-row>
@@ -71,6 +71,7 @@ export default {
       }
       try {
         this.games = await FetchGames(query);
+        console.log(this.games)
         // Mapping der Plattformen aus den priceInfo.deals
         this.games = this.games.map((item) => {
           const platforms = item.priceInfo.deals.map((deal) => deal.shop.name);
